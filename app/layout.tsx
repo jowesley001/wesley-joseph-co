@@ -8,7 +8,7 @@ import "./globals.css";
 const display = Cormorant_Garamond({
   subsets: ["latin"],
   variable: "--font-display",
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500", "600"],
   display: "swap"
 });
 
@@ -75,8 +75,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body className="bg-bg font-sans text-ink antialiased">
-        <Grain />
-        <Header />
+        <Grain opacity={0.04} />
+        <Header cinematic />
         <main className="relative">{children}</main>
       </body>
     </html>
