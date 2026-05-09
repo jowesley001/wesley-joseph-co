@@ -7,12 +7,11 @@ import { motion } from "framer-motion";
 //
 //   0.0s – 0.8s   invisible (atmospheric ground only)
 //   0.8s – 1.8s   eclipse fades in to opacity 1, scale 1.15
-//   1.8s – 3.2s   recedes:
-//                   opacity 1     → 0.35
-//                   scale   1.15  → 0.92
-//                   filter  blur(0) → blur(2px)
-//   3.2s – 4.2s   holds the receded state while the brand mark scales up
-//   4.2s +        ambient drift + breathing forever
+//   1.8s – 3.2s   dissolves completely:
+//                   opacity 1     → 0
+//                   scale   1.15  → 0.88
+//                   filter  blur(0) → blur(4px)
+//   3.2s +        gone; brand mark stands alone with atmospheric ground
 //
 // The crescent edge sweep, glow pulse and rim shimmer run as CSS keyframes
 // so they never stop, even after introComplete.
@@ -32,9 +31,9 @@ export function Eclipse({
     <motion.div
       initial={{ opacity: 0, scale: 1.15, filter: "blur(0px)" }}
       animate={{
-        opacity: [0, 0, 1, 0.35, 0.35],
-        scale: [1.15, 1.15, 1.15, 0.92, 0.92],
-        filter: ["blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)", "blur(2px)"]
+        opacity: [0, 0, 1, 0, 0],
+        scale: [1.15, 1.15, 1.15, 0.88, 0.88],
+        filter: ["blur(0px)", "blur(0px)", "blur(0px)", "blur(4px)", "blur(4px)"]
       }}
       transition={{
         duration: 4.2,
