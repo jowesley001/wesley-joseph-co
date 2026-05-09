@@ -7,8 +7,6 @@ import { SITE } from "@/lib/constants";
 import { IndexOverlay } from "./IndexOverlay";
 
 type Props = {
-  // When true, header reveal is delayed so it lands at the end of Phase 4.
-  // Deeper routes pass false to mount the chrome immediately.
   cinematic?: boolean;
 };
 
@@ -23,14 +21,15 @@ export function Header({ cinematic = false }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const reveal = cinematic ? 4.0 : 0.4;
+  // Header lands at the end of Scene 5, after the homepage emerges.
+  const reveal = cinematic ? 7.4 : 0.4;
 
   return (
     <>
       <motion.header
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.0, delay: reveal, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.2, delay: reveal, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed inset-x-0 top-0 z-40 transition-all duration-700 ease-cinematic ${
           scrolled ? "border-b border-line-subtle bg-bg/70 backdrop-blur-md" : "bg-transparent"
         }`}

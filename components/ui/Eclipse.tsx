@@ -2,47 +2,23 @@
 
 import { motion } from "framer-motion";
 
-// Eclipse — phased entry that fades and recedes as the brand mark grows
-// forward.
-//
-//   0.0s – 0.8s   invisible (atmospheric ground only)
-//   0.8s – 1.8s   eclipse fades in to opacity 1, scale 1.15
-//   1.8s – 3.2s   dissolves completely:
-//                   opacity 1     → 0
-//                   scale   1.15  → 0.88
-//                   filter  blur(0) → blur(4px)
-//   3.2s +        gone; brand mark stands alone with atmospheric ground
-//
-// The crescent edge sweep, glow pulse and rim shimmer run as CSS keyframes
-// so they never stop, even after introComplete.
+// Eclipse — purely presentational. The parent owns the entry choreography
+// (opacity / scale / x drift / blur). This component only renders the
+// visual layers and runs the always-on ambient motion.
 
 type Props = {
   className?: string;
   size?: string;
+  ambientDelay?: number;
 };
-
-const ENTRY_TIMES = [0, 0.19, 0.43, 0.76, 1] as const; // 0s, 0.8s, 1.8s, 3.2s, 4.2s
 
 export function Eclipse({
   className = "",
-  size = "h-[44vw] w-[44vw] max-h-[60vh] max-w-[60vh] md:h-[60vh] md:w-[60vh]"
+  size = "h-[44vw] w-[44vw] max-h-[60vh] max-w-[60vh] md:h-[60vh] md:w-[60vh]",
+  ambientDelay = 9.0
 }: Props) {
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 1.15, filter: "blur(0px)" }}
-      animate={{
-        opacity: [0, 0, 1, 0, 0],
-        scale: [1.15, 1.15, 1.15, 0.88, 0.88],
-        filter: ["blur(0px)", "blur(0px)", "blur(0px)", "blur(4px)", "blur(4px)"]
-      }}
-      transition={{
-        duration: 4.2,
-        times: [...ENTRY_TIMES],
-        ease: [0.22, 1, 0.36, 1]
-      }}
-      className={`relative ${size} ${className}`}
-      aria-hidden
-    >
+    <div className={`relative ${size} ${className}`} aria-hidden>
       <motion.div
         className="relative h-full w-full"
         animate={{
@@ -51,9 +27,9 @@ export function Eclipse({
           scale: [1, 1.018, 1]
         }}
         transition={{
-          x: { duration: 14, delay: 4.2, repeat: Infinity, ease: "easeInOut" },
-          y: { duration: 16, delay: 4.2, repeat: Infinity, ease: "easeInOut" },
-          scale: { duration: 7, delay: 4.2, repeat: Infinity, ease: "easeInOut" }
+          x: { duration: 14, delay: ambientDelay, repeat: Infinity, ease: "easeInOut" },
+          y: { duration: 16, delay: ambientDelay, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: 7, delay: ambientDelay, repeat: Infinity, ease: "easeInOut" }
         }}
       >
         {/* Soft outer corona */}
@@ -90,7 +66,7 @@ export function Eclipse({
           }}
         />
 
-        {/* The dark sphere */}
+        {/* Dark sphere */}
         <div className="absolute inset-0 rounded-full bg-black">
           <div
             className="absolute inset-0 rounded-full"
@@ -101,6 +77,6 @@ export function Eclipse({
           />
         </div>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
