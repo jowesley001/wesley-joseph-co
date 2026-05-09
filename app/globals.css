@@ -63,3 +63,78 @@ body {
   outline: 1px solid rgba(255, 255, 255, 0.7);
   outline-offset: 4px;
 }
+
+/* ─── Cinematic ambient keyframes ───────────────────────────────────────── */
+
+/* Film-grain shimmer — fast, low amplitude */
+@keyframes wjcGrain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-3%, -6%); }
+  20% { transform: translate(-9%, 3%); }
+  30% { transform: translate(4%, -14%); }
+  40% { transform: translate(-3%, 14%); }
+  50% { transform: translate(-9%, 6%); }
+  60% { transform: translate(8%, 0); }
+  70% { transform: translate(0, 9%); }
+  80% { transform: translate(2%, 19%); }
+  90% { transform: translate(-6%, 6%); }
+}
+
+/* Atmospheric gradient — drifts position and intensity over 18s */
+@keyframes wjcAmbientGradient {
+  0%, 100% {
+    background-position: 50% 50%;
+    opacity: 0.85;
+  }
+  33% {
+    background-position: 54% 53%;
+    opacity: 1;
+  }
+  66% {
+    background-position: 47% 48%;
+    opacity: 0.9;
+  }
+}
+
+/* Light leaks — out-of-phase swells */
+@keyframes wjcLeakA {
+  0%, 100% { opacity: 0; }
+  35%      { opacity: 0.18; }
+  50%      { opacity: 0.06; }
+  65%      { opacity: 0.20; }
+}
+
+@keyframes wjcLeakB {
+  0%, 100% { opacity: 0; }
+  30%      { opacity: 0.10; }
+  50%      { opacity: 0.16; }
+  70%      { opacity: 0.05; }
+}
+
+/* Crescent edge light — sweeps around the eclipse rim */
+@keyframes wjcCrescentSweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Outer glow — gentle pulse every ~6s */
+@keyframes wjcGlowPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.02); }
+}
+
+/* Particle drift — applied per-particle with random delays/durations */
+@keyframes wjcParticleA {
+  0%, 100% { transform: translate(0, 0); opacity: 0.32; }
+  50%      { transform: translate(8px, -14px); opacity: 0.55; }
+}
+
+@keyframes wjcParticleB {
+  0%, 100% { transform: translate(0, 0); opacity: 0.22; }
+  50%      { transform: translate(-12px, 10px); opacity: 0.48; }
+}
+
+@keyframes wjcParticleC {
+  0%, 100% { transform: translate(0, 0); opacity: 0.18; }
+  50%      { transform: translate(6px, 12px); opacity: 0.42; }
+}

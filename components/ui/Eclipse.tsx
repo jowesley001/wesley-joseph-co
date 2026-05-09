@@ -2,132 +2,97 @@
 
 import { motion } from "framer-motion";
 
+// Eclipse — phased entry + always-on ambient motion
+//
+// Phase 1 (0.0–1.2s): appears blurred, slightly larger, slightly below center
+// Phase 2 (1.2–2.4s): scale 1.08 → 1.0 and y +24 → 0, glow swells in
+// Phase 5 (2.4s+):    breathes and drifts forever
+//
+// Crescent edge sweep, glow pulse, and rim shimmer run via CSS keyframes
+// from globals.css so they never stop.
+
 type Props = {
-  delay?: number;
   className?: string;
   size?: string;
-  skipIntro?: boolean;
 };
 
 export function Eclipse({
-  delay = 0.8,
   className = "",
-  size = "h-[44vw] w-[44vw] max-h-[60vh] max-w-[60vh] md:h-[60vh] md:w-[60vh]",
-  skipIntro = false
+  size = "h-[44vw] w-[44vw] max-h-[60vh] max-w-[60vh] md:h-[60vh] md:w-[60vh]"
 }: Props) {
-  const enterDelay = skipIntro ? 0 : delay;
-  const enterDuration = skipIntro ? 1 : 2.6;
-  const ambientStart = enterDelay + (skipIntro ? 0.4 : 1.6);
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.82 }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        x: [0, 6, 0, -4, 0],
-        y: [0, -5, 0, 3, 0]
-      }}
+      // Outer wrapper handles the entry choreography.
+      // opacity + filter resolve in Phase 1; scale + y resolve in Phase 2.
+      initial={{ opacity: 0, scale: 1.08, y: 24, filter: "blur(8px)" }}
+      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
       transition={{
-        opacity: { duration: enterDuration, delay: enterDelay, ease: [0.22, 1, 0.36, 1] },
-        scale: { duration: enterDuration, delay: enterDelay, ease: [0.22, 1, 0.36, 1] },
-        x: {
-          duration: 34,
-          delay: ambientStart,
-          repeat: Infinity,
-          repeatType: "loop",
-          ease: "easeInOut"
-        },
-        y: {
-          duration: 30,
-          delay: ambientStart,
-          repeat: Infinity,
-          repeatType: "loop",
-          ease: "easeInOut"
-        }
+        opacity: { duration: 0.9, delay: 0.0, ease: [0.22, 1, 0.36, 1] },
+        filter: { duration: 1.2, delay: 0.0, ease: [0.22, 1, 0.36, 1] },
+        scale: { duration: 1.2, delay: 1.2, ease: [0.22, 1, 0.36, 1] },
+        y: { duration: 1.2, delay: 1.2, ease: [0.22, 1, 0.36, 1] }
       }}
       className={`relative ${size} ${className}`}
       aria-hidden
     >
-      {/* Soft outer corona — drifts independently for parallax depth */}
+      {/* Inner wrapper handles the always-on ambient drift + breathing. */}
       <motion.div
-        className="absolute -inset-[35%] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.14) 30%, rgba(255,255,255,0.06) 46%, rgba(255,255,255,0.0) 72%)"
-        }}
+        className="relative h-full w-full"
         animate={{
-          opacity: [0.6, 1, 0.6],
-          scale: [1, 1.025, 1],
-          x: [0, -4, 0, 5, 0],
-          y: [0, 4, 0, -4, 0]
+          x: [-8, 8, -8],
+          y: [-5, 7, -5],
+          scale: [1, 1.018, 1]
         }}
         transition={{
-          opacity: { duration: 9.4, repeat: Infinity, ease: "easeInOut" },
-          scale: { duration: 9.4, repeat: Infinity, ease: "easeInOut" },
-          x: { duration: 24, repeat: Infinity, ease: "easeInOut" },
-          y: { duration: 28, repeat: Infinity, ease: "easeInOut" }
+          x: { duration: 14, delay: 2.4, repeat: Infinity, ease: "easeInOut" },
+          y: { duration: 16, delay: 2.4, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: 7, delay: 2.4, repeat: Infinity, ease: "easeInOut" }
         }}
-      />
-
-      {/* Bright rim light — soft pulse */}
-      <motion.div
-        className="absolute -inset-[2%] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle, transparent 47.5%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0.0) 56%)"
-        }}
-        animate={{ opacity: [0.8, 1, 0.8] }}
-        transition={{ duration: 5.8, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      {/* Soft moving light wrap — a slow soft halo travels around the eclipse rim */}
-      <motion.div
-        className="absolute -inset-[8%] rounded-full"
-        style={{
-          background:
-            "conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0) 70deg, rgba(255,255,255,0.16) 100deg, rgba(255,255,255,0.04) 130deg, rgba(255,255,255,0) 200deg, rgba(255,255,255,0) 360deg)",
-          maskImage:
-            "radial-gradient(circle, transparent 47%, black 50%, black 56%, transparent 60%)",
-          WebkitMaskImage:
-            "radial-gradient(circle, transparent 47%, black 50%, black 56%, transparent 60%)"
-        }}
-        animate={{ rotate: 360, opacity: [0.55, 0.85, 0.55] }}
-        transition={{
-          rotate: { duration: 64, repeat: Infinity, ease: "linear" },
-          opacity: { duration: 11, repeat: Infinity, ease: "easeInOut" }
-        }}
-      />
-
-      {/* Eclipse — dark sphere with breathing scale */}
-      <motion.div
-        className="absolute inset-0 rounded-full bg-black"
-        animate={{ scale: [1, 1.018, 1] }}
-        transition={{ duration: 7.4, repeat: Infinity, ease: "easeInOut" }}
       >
-        {/* Surface highlight — extremely slow rotation gives the hint of a turning body */}
-        <motion.div
-          className="absolute inset-0 rounded-full"
+        {/* Soft outer corona — pulses and gently drifts via CSS */}
+        <div
+          className="absolute -inset-[35%] rounded-full"
           style={{
             background:
-              "radial-gradient(circle at 28% 24%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 28%, transparent 50%)"
+              "radial-gradient(circle, rgba(255,255,255,0.14) 30%, rgba(255,255,255,0.06) 46%, rgba(255,255,255,0) 72%)",
+            animation: "wjcGlowPulse 6s ease-in-out infinite"
           }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 260, repeat: Infinity, ease: "linear" }}
         />
-        {/* Secondary subtle shading layer — drifts at a different cadence */}
-        <motion.div
-          className="absolute inset-0 rounded-full"
+
+        {/* Bright rim ring — softly pulses */}
+        <div
+          className="absolute -inset-[2%] rounded-full"
           style={{
             background:
-              "radial-gradient(circle at 70% 78%, rgba(255,255,255,0.04) 0%, transparent 35%)"
-          }}
-          animate={{ rotate: -360, opacity: [0.5, 0.85, 0.5] }}
-          transition={{
-            rotate: { duration: 380, repeat: Infinity, ease: "linear" },
-            opacity: { duration: 13, repeat: Infinity, ease: "easeInOut" }
+              "radial-gradient(circle, transparent 47.5%, rgba(255,255,255,0.55) 50%, rgba(255,255,255,0) 56%)",
+            animation: "wjcGlowPulse 5.6s ease-in-out infinite -1s"
           }}
         />
+
+        {/* Crescent light sweep — rotates around the rim continuously (CSS) */}
+        <div
+          className="absolute -inset-[8%] rounded-full"
+          style={{
+            background:
+              "conic-gradient(from 0deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0) 60deg, rgba(255,255,255,0.22) 100deg, rgba(255,255,255,0.06) 140deg, rgba(255,255,255,0) 200deg, rgba(255,255,255,0) 360deg)",
+            maskImage:
+              "radial-gradient(circle, transparent 47%, black 50%, black 56%, transparent 60%)",
+            WebkitMaskImage:
+              "radial-gradient(circle, transparent 47%, black 50%, black 56%, transparent 60%)",
+            animation: "wjcCrescentSweep 22s linear infinite"
+          }}
+        />
+
+        {/* Eclipse — pure dark sphere */}
+        <div className="absolute inset-0 rounded-full bg-black">
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at 28% 24%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 28%, transparent 50%)"
+            }}
+          />
+        </div>
       </motion.div>
     </motion.div>
   );

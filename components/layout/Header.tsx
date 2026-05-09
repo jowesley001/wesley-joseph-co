@@ -7,8 +7,8 @@ import { SITE } from "@/lib/constants";
 import { IndexOverlay } from "./IndexOverlay";
 
 type Props = {
-  // When true, the header reveal is delayed so it lands at Phase 06.
-  // The deeper routes pass false to mount the chrome immediately.
+  // When true, header reveal is delayed so it lands at the end of Phase 4.
+  // Deeper routes pass false to mount the chrome immediately.
   cinematic?: boolean;
 };
 
@@ -23,14 +23,14 @@ export function Header({ cinematic = false }: Props) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const reveal = cinematic ? 5.0 : 0.4;
+  const reveal = cinematic ? 4.0 : 0.4;
 
   return (
     <>
       <motion.header
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.6, delay: reveal, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.0, delay: reveal, ease: [0.22, 1, 0.36, 1] }}
         className={`fixed inset-x-0 top-0 z-40 transition-all duration-700 ease-cinematic ${
           scrolled ? "border-b border-line-subtle bg-bg/70 backdrop-blur-md" : "bg-transparent"
         }`}
@@ -45,7 +45,7 @@ export function Header({ cinematic = false }: Props) {
               aria-hidden
               className="block h-1.5 w-1.5 rounded-full bg-ink"
               animate={{ opacity: [0.55, 1, 0.55] }}
-              transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
             />
             <span>{SITE.name}</span>
           </Link>
@@ -57,7 +57,10 @@ export function Header({ cinematic = false }: Props) {
             className="group flex items-center gap-3 font-mono text-[12px] uppercase tracking-[0.32em] text-ink-soft transition-colors duration-500 hover:text-ink"
           >
             <span>Index</span>
-            <span aria-hidden className="text-[14px] leading-none transition-transform duration-500 group-hover:rotate-45">
+            <span
+              aria-hidden
+              className="text-[14px] leading-none transition-transform duration-500 group-hover:rotate-45"
+            >
               +
             </span>
           </button>
