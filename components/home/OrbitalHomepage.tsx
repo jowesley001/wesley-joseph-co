@@ -31,9 +31,9 @@ const NODES: OrbitalNode[] = [
     href: "/insider",
     prominent: true
   },
-  { text: "Intelligence", pos: "left-[70%] top-[14%]" },
-  { text: "Capital", pos: "left-[12%] top-[58%]" },
-  { text: "Faith", pos: "left-[80%] top-[78%]" }
+  { text: "Media", pos: "left-[70%] top-[14%]" },
+  { text: "Wealth", pos: "left-[12%] top-[58%]" },
+  { text: "Influence", pos: "left-[80%] top-[78%]" }
 ];
 
 const headlineLines = ["The infrastructure", "for modern", "influence."];
@@ -56,31 +56,35 @@ function useNYTime() {
   return label;
 }
 
-export function OrbitalHomepage() {
+type Props = {
+  revealed: boolean;
+};
+
+export function OrbitalHomepage({ revealed }: Props) {
   const time = useNYTime();
 
   return (
     <section className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
-      <MovingGradient variant="center" intensity={0.13} />
-      <MovingParticles count={56} intensity="med" seed={3} />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.6, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <MovingGradient variant="center" intensity={0.13} />
+        <MovingParticles count={56} intensity="med" seed={3} />
+      </motion.div>
 
-      {/* Massive orbital system — the experience itself */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
-          className="relative aspect-square w-[min(115vh,1280px)] max-w-[95vw]"
-        >
-          <OrbitalSystem nodes={NODES} />
-        </motion.div>
+        <div className="pointer-events-auto relative aspect-square w-[min(115vh,1280px)] max-w-[95vw]">
+          <OrbitalSystem nodes={NODES} revealed={revealed} />
+        </div>
       </div>
 
-      {/* Single statement, bottom-left */}
+      {/* Statement, bottom-left */}
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.4, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: revealed ? 1 : 0, y: revealed ? 0 : 20 }}
+        transition={{ duration: 1.4, delay: revealed ? 0.6 : 0, ease: [0.22, 1, 0.36, 1] }}
         className="pointer-events-none absolute bottom-10 left-6 z-10 max-w-md md:bottom-14 md:left-12"
       >
         <h1 className="font-display text-[clamp(2.25rem,4.4vw,4.25rem)] leading-[1.05] text-ink">
@@ -90,10 +94,14 @@ export function OrbitalHomepage() {
               <motion.span
                 key={i}
                 initial={{ opacity: 0, y: 16, filter: "blur(10px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                animate={{
+                  opacity: revealed ? 1 : 0,
+                  y: revealed ? 0 : 16,
+                  filter: revealed ? "blur(0px)" : "blur(10px)"
+                }}
                 transition={{
                   duration: 1.4,
-                  delay: 0.9 + i * 0.18,
+                  delay: revealed ? 0.85 + i * 0.16 : 0,
                   ease: [0.22, 1, 0.36, 1]
                 }}
                 className="block"
@@ -105,12 +113,12 @@ export function OrbitalHomepage() {
         </h1>
       </motion.div>
 
-      {/* Live ops one-liner, bottom-right */}
+      {/* Live ops one-liner, bottom-right (desktop+) */}
       <motion.div
         initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, delay: 1.4, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none absolute bottom-10 right-6 z-10 flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.32em] text-ink-muted md:bottom-14 md:right-12"
+        animate={{ opacity: revealed ? 1 : 0, y: revealed ? 0 : 12 }}
+        transition={{ duration: 1.2, delay: revealed ? 1.4 : 0, ease: [0.22, 1, 0.36, 1] }}
+        className="pointer-events-none absolute bottom-14 right-12 z-10 hidden items-center gap-3 font-mono text-[12px] uppercase tracking-[0.32em] text-ink-soft md:flex"
       >
         <motion.span
           aria-hidden
