@@ -2,19 +2,27 @@
 
 import { motion } from "framer-motion";
 
-// Eclipse — phased entry + always-on ambient motion
+// Eclipse — phased entry that fades and recedes as the brand mark grows
+// forward.
 //
-// Phase 1 (0.0–1.2s): appears blurred, slightly larger, slightly below center
-// Phase 2 (1.2–2.4s): scale 1.08 → 1.0 and y +24 → 0, glow swells in
-// Phase 5 (2.4s+):    breathes and drifts forever
+//   0.0s – 0.8s   invisible (atmospheric ground only)
+//   0.8s – 1.8s   eclipse fades in to opacity 1, scale 1.15
+//   1.8s – 3.2s   recedes:
+//                   opacity 1     → 0.35
+//                   scale   1.15  → 0.92
+//                   filter  blur(0) → blur(2px)
+//   3.2s – 4.2s   holds the receded state while the brand mark scales up
+//   4.2s +        ambient drift + breathing forever
 //
-// Crescent edge sweep, glow pulse, and rim shimmer run via CSS keyframes
-// from globals.css so they never stop.
+// The crescent edge sweep, glow pulse and rim shimmer run as CSS keyframes
+// so they never stop, even after introComplete.
 
 type Props = {
   className?: string;
   size?: string;
 };
+
+const ENTRY_TIMES = [0, 0.19, 0.43, 0.76, 1] as const; // 0s, 0.8s, 1.8s, 3.2s, 4.2s
 
 export function Eclipse({
   className = "",
@@ -22,34 +30,34 @@ export function Eclipse({
 }: Props) {
   return (
     <motion.div
-      // Outer wrapper handles the entry choreography.
-      // opacity + filter resolve in Phase 1; scale + y resolve in Phase 2.
-      initial={{ opacity: 0, scale: 1.08, y: 24, filter: "blur(8px)" }}
-      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
+      initial={{ opacity: 0, scale: 1.15, filter: "blur(0px)" }}
+      animate={{
+        opacity: [0, 0, 1, 0.35, 0.35],
+        scale: [1.15, 1.15, 1.15, 0.92, 0.92],
+        filter: ["blur(0px)", "blur(0px)", "blur(0px)", "blur(2px)", "blur(2px)"]
+      }}
       transition={{
-        opacity: { duration: 0.9, delay: 0.0, ease: [0.22, 1, 0.36, 1] },
-        filter: { duration: 1.2, delay: 0.0, ease: [0.22, 1, 0.36, 1] },
-        scale: { duration: 1.2, delay: 1.2, ease: [0.22, 1, 0.36, 1] },
-        y: { duration: 1.2, delay: 1.2, ease: [0.22, 1, 0.36, 1] }
+        duration: 4.2,
+        times: [...ENTRY_TIMES],
+        ease: [0.22, 1, 0.36, 1]
       }}
       className={`relative ${size} ${className}`}
       aria-hidden
     >
-      {/* Inner wrapper handles the always-on ambient drift + breathing. */}
       <motion.div
         className="relative h-full w-full"
         animate={{
-          x: [-8, 8, -8],
-          y: [-5, 7, -5],
+          x: [-6, 6, -6],
+          y: [-4, 5, -4],
           scale: [1, 1.018, 1]
         }}
         transition={{
-          x: { duration: 14, delay: 2.4, repeat: Infinity, ease: "easeInOut" },
-          y: { duration: 16, delay: 2.4, repeat: Infinity, ease: "easeInOut" },
-          scale: { duration: 7, delay: 2.4, repeat: Infinity, ease: "easeInOut" }
+          x: { duration: 14, delay: 4.2, repeat: Infinity, ease: "easeInOut" },
+          y: { duration: 16, delay: 4.2, repeat: Infinity, ease: "easeInOut" },
+          scale: { duration: 7, delay: 4.2, repeat: Infinity, ease: "easeInOut" }
         }}
       >
-        {/* Soft outer corona — pulses and gently drifts via CSS */}
+        {/* Soft outer corona */}
         <div
           className="absolute -inset-[35%] rounded-full"
           style={{
@@ -59,7 +67,7 @@ export function Eclipse({
           }}
         />
 
-        {/* Bright rim ring — softly pulses */}
+        {/* Bright rim */}
         <div
           className="absolute -inset-[2%] rounded-full"
           style={{
@@ -69,7 +77,7 @@ export function Eclipse({
           }}
         />
 
-        {/* Crescent light sweep — rotates around the rim continuously (CSS) */}
+        {/* Crescent light sweep */}
         <div
           className="absolute -inset-[8%] rounded-full"
           style={{
@@ -83,7 +91,7 @@ export function Eclipse({
           }}
         />
 
-        {/* Eclipse — pure dark sphere */}
+        {/* The dark sphere */}
         <div className="absolute inset-0 rounded-full bg-black">
           <div
             className="absolute inset-0 rounded-full"
