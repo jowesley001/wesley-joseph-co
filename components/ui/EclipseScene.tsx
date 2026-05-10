@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { AdditiveBlending, MathUtils } from "three";
 import type { Group, Points } from "three";
 import { useMemo, useRef } from "react";
+import { EclipseIntroFallback } from "./EclipseIntroFallback";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -237,10 +238,11 @@ function EclipseWorld() {
 export function EclipseScene() {
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
+      <EclipseIntroFallback className="z-10" showFooter={false} />
       <motion.div
-        className="absolute inset-0"
+        className="absolute inset-0 z-20 mix-blend-screen"
         initial={{ opacity: 0, scale: 1.08, filter: "blur(10px)" }}
-        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+        animate={{ opacity: 0.82, scale: 1, filter: "blur(0px)" }}
         transition={{ duration: 3.8, ease: EASE }}
       >
         <Canvas
@@ -255,14 +257,14 @@ export function EclipseScene() {
 
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-black"
-        initial={{ opacity: 1 }}
+        className="pointer-events-none absolute inset-0 z-30 bg-black"
+        initial={{ opacity: 0.34 }}
         animate={{ opacity: 0 }}
-        transition={{ duration: 2.2, delay: 0.35, ease: EASE }}
+        transition={{ duration: 1.2, delay: 0.15, ease: EASE }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-40"
         style={{
           background:
             "radial-gradient(circle at 60% 48%, rgba(255,255,255,0.12), rgba(255,255,255,0.035) 18%, rgba(0,0,0,0) 44%), radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,0.82) 100%)"
@@ -270,7 +272,7 @@ export function EclipseScene() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.09] mix-blend-screen"
+        className="pointer-events-none absolute inset-0 z-40 opacity-[0.09] mix-blend-screen"
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px)",
@@ -279,7 +281,7 @@ export function EclipseScene() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-[-4%] opacity-[0.12] mix-blend-overlay"
+        className="pointer-events-none absolute inset-[-4%] z-40 opacity-[0.12] mix-blend-overlay"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 260 260' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E\")",
@@ -288,7 +290,7 @@ export function EclipseScene() {
       />
 
       <motion.div
-        className="pointer-events-none absolute bottom-10 left-8 right-8 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.34em] text-white/55 md:left-12 md:right-12"
+        className="pointer-events-none absolute bottom-10 left-8 right-8 z-50 flex items-end justify-between font-mono text-[10px] uppercase tracking-[0.34em] text-white/55 md:left-12 md:right-12"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.4, delay: 2.1, ease: EASE }}

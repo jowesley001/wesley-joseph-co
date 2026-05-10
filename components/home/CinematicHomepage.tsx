@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { INTRO_STORAGE_KEY } from "@/lib/constants";
+import { EclipseIntroFallback } from "@/components/ui/EclipseIntroFallback";
 import { OrbitHomepage } from "./OrbitHomepage";
 
 // Cinematic intro → orbit homepage:
@@ -34,15 +35,36 @@ function markIntroSeen() {
 
 const EclipseScene = dynamic(
   () => import("@/components/ui/EclipseScene").then((m) => m.EclipseScene),
-  { ssr: false, loading: () => null }
+  { ssr: false, loading: () => <EclipseIntroFallback /> }
 );
 
 export function CinematicHomepage() {
   // Phases: "intro" (eclipse playing) → "transition" (eclipse fading out)
   // → "homepage" (editorial homepage interactive)
   const [phase, setPhase] = useState<Phase>("checking");
+  const introStartedInThisMount = useRef(false);
 
   useEffect(() => {
+    const startIntro = () => {
+      introStartedInThisMount.current = true;
+      setPhase("intro");
+
+      const t1 = window.setTimeout(() => setPhase("transition"), ECLIPSE_PLAY_MS);
+      const t2 = window.setTimeout(
+        () => setPhase("homepage"),
+        ECLIPSE_PLAY_MS + TRANSITION_MS
+      );
+
+      return () => {
+        window.clearTimeout(t1);
+        window.clearTimeout(t2);
+      };
+    };
+
+    if (introStartedInThisMount.current) {
+      return startIntro();
+    }
+
     if (hasSeenIntro()) {
       setPhase("homepage");
       return;
@@ -51,17 +73,7 @@ export function CinematicHomepage() {
     // To replay the intro during testing:
     // sessionStorage.removeItem("wj:intro-seen")
     markIntroSeen();
-    setPhase("intro");
-
-    const t1 = window.setTimeout(() => setPhase("transition"), ECLIPSE_PLAY_MS);
-    const t2 = window.setTimeout(
-      () => setPhase("homepage"),
-      ECLIPSE_PLAY_MS + TRANSITION_MS
-    );
-    return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
-    };
+    return startIntro();
   }, []);
 
   // Orbit homepage is a single fullscreen environment; lock scroll throughout.
@@ -77,7 +89,7 @@ export function CinematicHomepage() {
   const homepageActive = phase === "homepage";
 
   if (phase === "checking") {
-    return <div className="h-[100svh] bg-bg" aria-hidden />;
+    return <EclipseIntroFallback />;
   }
 
   return (
