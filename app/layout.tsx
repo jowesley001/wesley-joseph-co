@@ -74,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body className="bg-bg font-sans text-ink antialiased">
-        <Grain opacity={0.04} />
+        <Grain opacity={0.06} />
         <Header cinematic />
         <main className="relative">{children}</main>
       </body>

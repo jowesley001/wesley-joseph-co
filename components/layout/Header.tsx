@@ -51,12 +51,12 @@ export function Header({ cinematic = false }: Props) {
       <div className="mx-auto grid max-w-[1680px] grid-cols-[1fr_auto_1fr] items-center px-6 py-6 md:px-12">
         <Link
           href="/"
-          className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.32em] text-ink md:text-[12px]"
+          className="flex items-center gap-3 font-mono text-[11px] font-medium uppercase tracking-[0.34em] text-white md:text-[12.5px]"
           aria-label={SITE.name}
         >
           <motion.span
             aria-hidden
-            className="block h-1.5 w-1.5 rounded-full bg-ink"
+            className="block h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.6)]"
             animate={{ opacity: [0.55, 1, 0.55] }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -64,7 +64,7 @@ export function Header({ cinematic = false }: Props) {
         </Link>
 
         <span
-          className="hidden justify-self-center font-mono text-[11px] uppercase tracking-[0.32em] text-ink-soft md:inline-flex md:text-[12px]"
+          className="hidden justify-self-center font-mono text-[11px] font-medium uppercase tracking-[0.32em] text-ink-soft md:inline-flex md:text-[12px]"
           suppressHydrationWarning
         >
           (NY) {time || "——:——"}
@@ -72,13 +72,13 @@ export function Header({ cinematic = false }: Props) {
 
         <nav
           aria-label="Primary"
-          className="hidden items-center justify-end gap-7 font-mono text-[11px] uppercase tracking-[0.32em] text-ink-soft md:flex md:text-[12px]"
+          className="hidden items-center justify-end gap-7 font-mono text-[11px] font-medium uppercase tracking-[0.32em] text-ink-soft md:flex md:text-[12px]"
         >
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="transition-colors duration-500 hover:text-ink"
+              className="transition-colors duration-500 hover:text-white"
             >
               {link.label}
             </Link>
@@ -87,7 +87,7 @@ export function Header({ cinematic = false }: Props) {
 
         <Link
           href="/ventures"
-          className="justify-self-end font-mono text-[11px] uppercase tracking-[0.32em] text-ink-soft transition-colors duration-500 hover:text-ink md:hidden"
+          className="justify-self-end font-mono text-[11px] font-medium uppercase tracking-[0.32em] text-ink-soft transition-colors duration-500 hover:text-white md:hidden"
         >
           Ventures
         </Link>
