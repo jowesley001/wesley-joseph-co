@@ -3,14 +3,12 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { EditorialHomepage } from "./EditorialHomepage";
+import { OrbitHomepage } from "./OrbitHomepage";
 
-// Cinematic intro → editorial homepage:
-//
+// Cinematic intro → orbit homepage:
 //   0.0 – 10.0s   Eclipse plays alone, full formation
-//   10.0 – 12.0s  Eclipse dissolves: canvas fades and gently zooms
-//                 out while the editorial homepage fades in beneath
-//   12.0s+        Homepage is interactive; user can scroll, navigate
+//   10.0 – 12.0s  Eclipse dissolves; orbital homepage fades in beneath
+//   12.0s+        Orbit homepage is live and ambient
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const ECLIPSE_PLAY_MS = 10_000;
@@ -40,17 +38,13 @@ export function CinematicHomepage() {
     };
   }, []);
 
-  // Lock scrolling during intro + transition
+  // Orbit homepage is a single fullscreen environment; lock scroll throughout.
   useEffect(() => {
-    if (phase === "homepage") {
-      document.body.style.overflow = "";
-    } else {
-      document.body.style.overflow = "hidden";
-    }
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [phase]);
+  }, []);
 
   const eclipseFading = phase !== "intro";
   const homepageVisible = phase !== "intro";
@@ -80,7 +74,7 @@ export function CinematicHomepage() {
         <EclipseScene />
       </motion.div>
 
-      {/* Editorial homepage — underneath, fades in as eclipse dissolves */}
+      {/* Orbit homepage — underneath, fades in as eclipse dissolves */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: homepageVisible ? 1 : 0 }}
@@ -90,7 +84,7 @@ export function CinematicHomepage() {
           ease: EASE
         }}
       >
-        <EditorialHomepage active={phase === "homepage"} />
+        <OrbitHomepage active={phase === "homepage"} />
       </motion.div>
     </>
   );

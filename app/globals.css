@@ -129,6 +129,25 @@ body {
   to   { transform: rotate(360deg); }
 }
 
+/* Orbital rings — 3D-tilted ellipses rotating around the eclipse.
+   Different keyframes give each ring a unique tilt + rotation direction. */
+@keyframes wjcOrbitRingA {
+  from { transform: rotateX(64deg) rotateZ(-18deg); }
+  to   { transform: rotateX(64deg) rotateZ(342deg); }
+}
+@keyframes wjcOrbitRingB {
+  from { transform: rotateX(66deg) rotateZ(22deg); }
+  to   { transform: rotateX(66deg) rotateZ(-338deg); }
+}
+@keyframes wjcOrbitRingC {
+  from { transform: rotateX(62deg) rotateZ(-32deg); }
+  to   { transform: rotateX(62deg) rotateZ(328deg); }
+}
+@keyframes wjcOrbitRingD {
+  from { transform: rotateX(60deg) rotateZ(8deg); }
+  to   { transform: rotateX(60deg) rotateZ(-352deg); }
+}
+
 /* Particle drift — applied per-particle with random delays/durations */
 @keyframes wjcParticleA {
   0%, 100% { transform: translate(0, 0); opacity: 0.32; }
