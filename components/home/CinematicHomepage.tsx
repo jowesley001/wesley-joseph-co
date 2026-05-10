@@ -3,18 +3,18 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { MovingParticles } from "@/components/ui/MovingParticles";
+import { EditorialHomepage } from "./EditorialHomepage";
 
-// Cinematic sequence:
+// Cinematic intro → editorial homepage:
 //
-//   0.0 – 13.0s   The Spline eclipse plays alone, undisturbed. Full
-//                 formation: moon drifts across the sun, corona
-//                 forms, totality lands and holds. Nothing else
-//                 moves.
-//   13.0s+        Tagline rises in. Header lands. Eclipse keeps
-//                 breathing forever in its native composition.
+//   0.0 – 10.0s   Eclipse plays alone, full formation
+//   10.0 – 12.0s  Eclipse dissolves: canvas fades and gently zooms
+//                 out while the editorial homepage fades in beneath
+//   12.0s+        Homepage is interactive; user can scroll, navigate
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+const ECLIPSE_PLAY_MS = 10_000;
+const TRANSITION_MS = 2_000;
 
 const EclipseScene = dynamic(
   () => import("@/components/ui/EclipseScene").then((m) => m.EclipseScene),
@@ -22,49 +22,76 @@ const EclipseScene = dynamic(
 );
 
 export function CinematicHomepage() {
-  const [introComplete, setIntroComplete] = useState(false);
+  // Phases: "intro" (eclipse playing) → "transition" (eclipse fading out)
+  // → "homepage" (editorial homepage interactive)
+  const [phase, setPhase] = useState<"intro" | "transition" | "homepage">(
+    "intro"
+  );
 
   useEffect(() => {
-    const t = window.setTimeout(() => setIntroComplete(true), 13500);
-    return () => window.clearTimeout(t);
+    const t1 = window.setTimeout(() => setPhase("transition"), ECLIPSE_PLAY_MS);
+    const t2 = window.setTimeout(
+      () => setPhase("homepage"),
+      ECLIPSE_PLAY_MS + TRANSITION_MS
+    );
+    return () => {
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+    };
   }, []);
 
-  return (
-    <section className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
-      {/* Spline eclipse — plays at native composition */}
-      <div className="absolute inset-0 z-0">
-        <EclipseScene />
-      </div>
+  // Lock scrolling during intro + transition
+  useEffect(() => {
+    if (phase === "homepage") {
+      document.body.style.overflow = "";
+    } else {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [phase]);
 
-      {/* HTML particles supplement the WebGL atmosphere */}
+  const eclipseFading = phase !== "intro";
+  const homepageVisible = phase !== "intro";
+
+  return (
+    <>
+      {/* Eclipse intro layer — fixed full-screen overlay */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6, delay: 0.4, ease: EASE }}
-        className="pointer-events-none absolute inset-0 z-[1]"
+        aria-hidden={phase === "homepage"}
+        initial={{ opacity: 1, scale: 1 }}
+        animate={{
+          opacity: eclipseFading ? 0 : 1,
+          scale: eclipseFading ? 1.08 : 1
+        }}
+        transition={{
+          duration: TRANSITION_MS / 1000,
+          ease: EASE
+        }}
+        className={`fixed inset-0 z-40 ${
+          phase === "homepage" ? "pointer-events-none" : ""
+        }`}
+        style={{
+          willChange: "opacity, transform",
+          visibility: phase === "homepage" ? "hidden" : "visible"
+        }}
       >
-        <MovingParticles count={18} intensity="low" seed={3} />
+        <EclipseScene />
       </motion.div>
 
-      {/* Tagline arrives after the eclipse fully forms */}
-      <motion.p
-        initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
-        animate={{ opacity: 0.9, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 1.4, delay: 13.0, ease: EASE }}
-        className="pointer-events-none absolute bottom-12 left-0 right-0 z-30 px-6 text-center md:bottom-16"
+      {/* Editorial homepage — underneath, fades in as eclipse dissolves */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: homepageVisible ? 1 : 0 }}
+        transition={{
+          duration: TRANSITION_MS / 1000,
+          delay: 0,
+          ease: EASE
+        }}
       >
-        <motion.span
-          className="inline-block font-mono text-[clamp(0.7rem,0.95vw,0.85rem)] uppercase tracking-[0.45em] text-ink-soft"
-          animate={introComplete ? { opacity: [0.85, 1, 0.85] } : { opacity: 1 }}
-          transition={
-            introComplete
-              ? { duration: 8, repeat: Infinity, ease: "easeInOut" }
-              : { duration: 0 }
-          }
-        >
-          Financial intelligence · Media power · Cultural influence
-        </motion.span>
-      </motion.p>
-    </section>
+        <EditorialHomepage active={phase === "homepage"} />
+      </motion.div>
+    </>
   );
 }
