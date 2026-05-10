@@ -16,7 +16,7 @@ export const ventures: Venture[] = [
     tagline: "Visual storytelling elevated.",
     description:
       "Editorial campaigns, brand films, and image direction for founders, funds, and institutions.",
-    href: "mailto:lumina@wesleyjoseph.co"
+    href: "/lumina"
   },
   {
     id: "network",
@@ -25,7 +25,7 @@ export const ventures: Venture[] = [
     tagline: "Connections that create opportunity.",
     description:
       "A private multi-state membership for operators, owners, and capital allocators.",
-    href: "mailto:network@wesleyjoseph.co"
+    href: "/network"
   },
   {
     id: "insider",

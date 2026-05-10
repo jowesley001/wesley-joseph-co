@@ -1,13 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ventures } from "@/content/ventures";
 
 type Props = {
   active: boolean;
 };
+
+type ExitTarget = { href: string; external: boolean };
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -37,18 +40,44 @@ export function OrbitHomepage({ active }: Props) {
     return () => window.removeEventListener("pointermove", onMove);
   }, [px, py]);
 
+  // Exit-fade state — when a venture is activated, the whole composition
+  // fades out before the navigation happens, so leaving never feels like
+  // a hard cut.
+  const [exitTo, setExitTo] = useState<ExitTarget | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!exitTo) return;
+    const id = window.setTimeout(() => {
+      if (exitTo.external) {
+        window.location.href = exitTo.href;
+      } else {
+        router.push(exitTo.href);
+      }
+    }, 700);
+    return () => window.clearTimeout(id);
+  }, [exitTo, router]);
+
+  const navigate = useCallback((target: ExitTarget) => {
+    setExitTo((prev) => prev ?? target);
+  }, []);
+
   return (
-    <div className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
+    <motion.div
+      className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink"
+      animate={exitTo ? { opacity: 0, filter: "blur(4px)" } : { opacity: 1, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: EASE }}
+    >
       <DeepSpaceField px={px} py={py} />
       <NebulaClouds />
       <CosmicDust />
       <AmbientField />
-      <OrbitalSystem active={active} px={px} py={py} />
+      <OrbitalSystem active={active} px={px} py={py} onNavigate={navigate} />
       <AtmosphericHaze />
       <StreakLayer />
       <Headline active={active} />
       <BottomStatus active={active} />
-    </div>
+    </motion.div>
   );
 }
 
@@ -558,11 +587,13 @@ const RINGS = [
 function OrbitalSystem({
   active,
   px,
-  py
+  py,
+  onNavigate
 }: {
   active: boolean;
   px: ReturnType<typeof useMotionValue<number>>;
   py: ReturnType<typeof useMotionValue<number>>;
+  onNavigate: (target: ExitTarget) => void;
 }) {
   // Whole-system camera parallax — the orbit drifts opposite to the
   // pointer for a "floating in space" feel.
@@ -619,7 +650,7 @@ function OrbitalSystem({
 
             <AtmosphericLabels />
             <EclipseCore />
-            <VentureNodes />
+            <VentureNodes onNavigate={onNavigate} />
           </div>
         </motion.div>
       </motion.div>
@@ -785,7 +816,11 @@ function EclipseCore() {
   );
 }
 
-function VentureNodes() {
+function VentureNodes({
+  onNavigate
+}: {
+  onNavigate: (target: ExitTarget) => void;
+}) {
   // Three ventures ride the orbital rings and drift gently along the
   // tangent of their orbit so they feel alive without leaving position.
   //   01 LUMINA MEDIA            → 258° (top, slightly left of vertical)
@@ -872,6 +907,7 @@ function VentureNodes() {
                   venture={n.v}
                   number={number}
                   placement={n.labelPlacement}
+                  onNavigate={onNavigate}
                 />
               </motion.div>
             </motion.div>
@@ -885,15 +921,31 @@ function VentureNodes() {
 function VentureNode({
   venture,
   number,
-  placement
+  placement,
+  onNavigate
 }: {
   venture: (typeof ventures)[number];
   number: string;
   placement: "below" | "right";
+  onNavigate: (target: ExitTarget) => void;
 }) {
-  const linkProps = venture.external
-    ? { target: "_blank" as const, rel: "noreferrer noopener" }
-    : {};
+  const [hover, setHover] = useState(false);
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Modifier-clicks let the browser handle them natively (new tab,
+    // download, etc.) — we only intercept plain primary-button clicks.
+    if (
+      e.metaKey ||
+      e.ctrlKey ||
+      e.shiftKey ||
+      e.altKey ||
+      e.button !== 0
+    ) {
+      return;
+    }
+    e.preventDefault();
+    onNavigate({ href: venture.href, external: !!venture.external });
+  };
 
   const layout =
     placement === "below"
@@ -901,25 +953,86 @@ function VentureNode({
       : "flex-row items-center gap-4";
   const labelLayout = placement === "below" ? "text-center" : "text-left";
 
+  // Larger invisible tap target so the node stays easy to hit on mobile
+  // and while it drifts. The ring is keyed off hover so it expands to
+  // reveal a subtle focus halo.
   return (
-    <Link href={venture.href} {...linkProps} className={`group flex ${layout}`}>
+    <Link
+      href={venture.href}
+      onClick={handleClick}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
+      aria-label={`${venture.name} — ${venture.category}`}
+      className={`group relative flex cursor-pointer rounded-md p-2 outline-none focus-visible:ring-1 focus-visible:ring-white/60 ${layout}`}
+    >
+      {/* Soft focus halo behind the whole node — fades in on hover. */}
+      <motion.span
+        aria-hidden
+        className="pointer-events-none absolute -inset-3 rounded-2xl"
+        animate={{
+          opacity: hover ? 1 : 0,
+          scale: hover ? 1 : 0.92
+        }}
+        transition={{ duration: 0.6, ease: EASE }}
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 35%, rgba(0,0,0,0) 70%)"
+        }}
+      />
+
+      {/* Pulsing dot anchor — scales and brightens on hover. */}
       <span className="relative flex h-3.5 w-3.5 shrink-0 items-center justify-center">
         <motion.span
           aria-hidden
           className="absolute inset-0 rounded-full bg-white/20"
-          animate={{ scale: [1, 2.4, 1], opacity: [0.55, 0, 0.55] }}
-          transition={{ duration: 3.6, repeat: Infinity, ease: "easeOut" }}
+          animate={{
+            scale: hover ? [1.2, 2.8, 1.2] : [1, 2.4, 1],
+            opacity: hover ? [0.7, 0, 0.7] : [0.55, 0, 0.55]
+          }}
+          transition={{
+            duration: hover ? 2.6 : 3.6,
+            repeat: Infinity,
+            ease: "easeOut"
+          }}
         />
-        <span className="relative h-2 w-2 rounded-full bg-ink shadow-[0_0_12px_rgba(255,255,255,0.7)]" />
+        <motion.span
+          className="relative rounded-full bg-white"
+          animate={{
+            scale: hover ? 1.35 : 1,
+            boxShadow: hover
+              ? "0 0 18px rgba(255,255,255,0.95), 0 0 36px rgba(255,255,255,0.5)"
+              : "0 0 12px rgba(255,255,255,0.7)"
+          }}
+          transition={{ duration: 0.5, ease: EASE }}
+          style={{ width: 8, height: 8 }}
+        />
       </span>
 
       <span className={`flex flex-col gap-1.5 ${labelLayout}`}>
-        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.44em] text-white/85 md:text-[12px]">
+        <motion.span
+          className="font-mono text-[11px] font-medium uppercase tracking-[0.44em] text-white md:text-[12px]"
+          animate={{
+            opacity: hover ? 1 : 0.85,
+            letterSpacing: hover ? "0.5em" : "0.44em"
+          }}
+          transition={{ duration: 0.5, ease: EASE }}
+        >
           {number}
-        </span>
-        <span className="font-mono text-[13px] font-semibold uppercase tracking-[0.34em] text-white leading-tight transition-colors duration-500 md:text-[15px]">
+        </motion.span>
+        <motion.span
+          className="font-mono text-[13px] font-semibold uppercase tracking-[0.34em] text-white leading-tight md:text-[15px]"
+          animate={{
+            letterSpacing: hover ? "0.4em" : "0.34em",
+            textShadow: hover
+              ? "0 0 22px rgba(255,255,255,0.55)"
+              : "0 0 0px rgba(255,255,255,0)"
+          }}
+          transition={{ duration: 0.55, ease: EASE }}
+        >
           {venture.name}
-        </span>
+        </motion.span>
       </span>
     </Link>
   );
