@@ -39,10 +39,12 @@ export function OrbitHomepage({ active }: Props) {
 
   return (
     <div className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
-      <StarField px={px} py={py} />
+      <DeepSpaceField px={px} py={py} />
       <NebulaClouds />
+      <CosmicDust />
       <AmbientField />
       <OrbitalSystem active={active} px={px} py={py} />
+      <AtmosphericHaze />
       <StreakLayer />
       <Headline active={active} />
       <BottomStatus active={active} />
@@ -128,7 +130,7 @@ function makeStars(count: number, seed: number, opts: {
   });
 }
 
-function StarField({
+function DeepSpaceField({
   px,
   py
 }: {
@@ -138,16 +140,31 @@ function StarField({
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  // Three depth layers — far / mid / near. Far moves least with parallax.
+  // Four depth layers — distant / far / mid / near. Each tier moves a
+  // little more with the cursor parallax so the field reads as 3D.
+  const distantStars = useMemo(
+    () =>
+      makeStars(180, 3, {
+        sizeMin: 0.4,
+        sizeMax: 0.9,
+        opacityMin: 0.12,
+        opacityMax: 0.32,
+        driftMin: 0,
+        driftMax: 4,
+        durMin: 28,
+        durMax: 46
+      }),
+    []
+  );
   const farStars = useMemo(
     () =>
-      makeStars(110, 7, {
-        sizeMin: 0.6,
+      makeStars(140, 7, {
+        sizeMin: 0.7,
         sizeMax: 1.4,
-        opacityMin: 0.18,
-        opacityMax: 0.45,
+        opacityMin: 0.22,
+        opacityMax: 0.5,
         driftMin: 0,
-        driftMax: 6,
+        driftMax: 7,
         durMin: 22,
         durMax: 38
       }),
@@ -155,11 +172,11 @@ function StarField({
   );
   const midStars = useMemo(
     () =>
-      makeStars(48, 11, {
-        sizeMin: 1.0,
-        sizeMax: 1.8,
-        opacityMin: 0.32,
-        opacityMax: 0.6,
+      makeStars(70, 11, {
+        sizeMin: 1.1,
+        sizeMax: 1.9,
+        opacityMin: 0.35,
+        opacityMax: 0.65,
         driftMin: 0,
         driftMax: 12,
         durMin: 18,
@@ -169,11 +186,11 @@ function StarField({
   );
   const nearStars = useMemo(
     () =>
-      makeStars(20, 19, {
+      makeStars(30, 19, {
         sizeMin: 1.4,
-        sizeMax: 2.4,
-        opacityMin: 0.48,
-        opacityMax: 0.85,
+        sizeMax: 2.6,
+        opacityMin: 0.5,
+        opacityMax: 0.9,
         driftMin: 0,
         driftMax: 22,
         durMin: 14,
@@ -182,8 +199,9 @@ function StarField({
     []
   );
 
-  // A handful of bright "lighthouse" stars that twinkle — anchored at
-  // chosen positions so the composition has consistent focal points.
+  // Bright "lighthouse" stars that twinkle — anchored at chosen
+  // positions so the composition has consistent focal points throughout
+  // the viewport.
   const brightStars = useMemo(
     () => [
       { x: 8, y: 14, size: 2.6 },
@@ -192,23 +210,34 @@ function StarField({
       { x: 76, y: 18, size: 2.8 },
       { x: 92, y: 64, size: 3.2 },
       { x: 64, y: 88, size: 2.4 },
-      { x: 14, y: 52, size: 2.6 }
+      { x: 14, y: 52, size: 2.6 },
+      { x: 88, y: 32, size: 2.4 },
+      { x: 4, y: 86, size: 2.8 },
+      { x: 52, y: 8, size: 2.4 },
+      { x: 96, y: 92, size: 2.6 }
     ],
     []
   );
 
-  // Parallax transforms — far drifts least, near drifts most.
-  const farX = useTransform(px, (v) => v * -4);
-  const farY = useTransform(py, (v) => v * -4);
-  const midX = useTransform(px, (v) => v * -10);
-  const midY = useTransform(py, (v) => v * -10);
-  const nearX = useTransform(px, (v) => v * -22);
-  const nearY = useTransform(py, (v) => v * -22);
+  // Parallax transforms — distant drifts least, near drifts most.
+  const distantX = useTransform(px, (v) => v * -2);
+  const distantY = useTransform(py, (v) => v * -2);
+  const farX = useTransform(px, (v) => v * -5);
+  const farY = useTransform(py, (v) => v * -5);
+  const midX = useTransform(px, (v) => v * -12);
+  const midY = useTransform(py, (v) => v * -12);
+  const nearX = useTransform(px, (v) => v * -24);
+  const nearY = useTransform(py, (v) => v * -24);
 
   if (!mounted) return null;
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0">
+      <motion.div className="absolute inset-0" style={{ x: distantX, y: distantY }}>
+        {distantStars.map((s) => (
+          <StarDot key={s.id} star={s} />
+        ))}
+      </motion.div>
       <motion.div className="absolute inset-0" style={{ x: farX, y: farY }}>
         {farStars.map((s) => (
           <StarDot key={s.id} star={s} />
@@ -228,6 +257,60 @@ function StarField({
         ))}
       </motion.div>
     </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Cosmic dust — fine drifting particles for atmosphere depth.                 */
+/* -------------------------------------------------------------------------- */
+
+function CosmicDust() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const dust = useMemo(
+    () =>
+      makeStars(70, 31, {
+        sizeMin: 0.5,
+        sizeMax: 1.2,
+        opacityMin: 0.06,
+        opacityMax: 0.22,
+        driftMin: 8,
+        driftMax: 26,
+        durMin: 30,
+        durMax: 60
+      }),
+    []
+  );
+
+  if (!mounted) return null;
+
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      {dust.map((d) => (
+        <StarDot key={d.id} star={d} />
+      ))}
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Atmospheric haze — soft greyscale wash that drifts slowly.                  */
+/* -------------------------------------------------------------------------- */
+
+function AtmosphericHaze() {
+  return (
+    <motion.div
+      aria-hidden
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background:
+          "radial-gradient(ellipse 90% 80% at 54% 50%, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.012) 35%, rgba(0,0,0,0) 70%)",
+        mixBlendMode: "screen"
+      }}
+      animate={{ opacity: [0.7, 1, 0.7] }}
+      transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+    />
   );
 }
 
@@ -267,78 +350,72 @@ function StarDot({ star, glow = false }: { star: Star; glow?: boolean }) {
 /* -------------------------------------------------------------------------- */
 
 function NebulaClouds() {
+  // Six soft greyscale gradient blobs at varied sizes, opacities, and
+  // depths. Each drifts and scales on a unique long loop so the field
+  // never settles into a static composition.
+  const clouds = [
+    {
+      width: 78, left: "12%", top: "62%",
+      g: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 35%, rgba(0,0,0,0) 70%)",
+      blur: 30, dur: 60, delay: 0,
+      x: [-20, 18, -20], y: [-12, 14, -12], scale: [1, 1.08, 1]
+    },
+    {
+      width: 60, left: "82%", top: "20%",
+      g: "radial-gradient(circle, rgba(255,255,255,0.042) 0%, rgba(255,255,255,0.014) 40%, rgba(0,0,0,0) 70%)",
+      blur: 36, dur: 72, delay: 4,
+      x: [12, -16, 12], y: [10, -8, 10], scale: [1.05, 1, 1.05]
+    },
+    {
+      width: 52, left: "30%", top: "20%",
+      g: "radial-gradient(circle, rgba(255,255,255,0.028) 0%, rgba(0,0,0,0) 65%)",
+      blur: 42, dur: 88, delay: 12,
+      x: [-10, 14, -10], y: [8, -10, 8], scale: [1, 1.06, 1]
+    },
+    {
+      width: 88, left: "70%", top: "78%",
+      g: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 40%, rgba(0,0,0,0) 72%)",
+      blur: 44, dur: 96, delay: 6,
+      x: [16, -10, 16], y: [-14, 12, -14], scale: [1.04, 1, 1.04]
+    },
+    {
+      width: 40, left: "8%", top: "30%",
+      g: "radial-gradient(circle, rgba(255,255,255,0.022) 0%, rgba(0,0,0,0) 65%)",
+      blur: 32, dur: 64, delay: 18,
+      x: [-8, 12, -8], y: [10, -6, 10], scale: [1, 1.05, 1]
+    },
+    {
+      width: 36, left: "60%", top: "12%",
+      g: "radial-gradient(circle, rgba(255,255,255,0.026) 0%, rgba(0,0,0,0) 65%)",
+      blur: 30, dur: 78, delay: 22,
+      x: [10, -10, 10], y: [-8, 10, -8], scale: [1.03, 1, 1.03]
+    }
+  ];
+
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0">
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: "70vmin",
-          height: "70vmin",
-          left: "12%",
-          top: "62%",
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.018) 35%, rgba(0,0,0,0) 70%)",
-          filter: "blur(28px)",
-          transform: "translate(-50%, -50%)"
-        }}
-        animate={{
-          x: [-20, 18, -20],
-          y: [-12, 14, -12],
-          scale: [1, 1.08, 1]
-        }}
-        transition={{
-          duration: 60,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: "55vmin",
-          height: "55vmin",
-          left: "82%",
-          top: "20%",
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.038) 0%, rgba(255,255,255,0.012) 40%, rgba(0,0,0,0) 70%)",
-          filter: "blur(34px)",
-          transform: "translate(-50%, -50%)"
-        }}
-        animate={{
-          x: [12, -16, 12],
-          y: [10, -8, 10],
-          scale: [1.05, 1, 1.05]
-        }}
-        transition={{
-          duration: 72,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 4
-        }}
-      />
-      <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: "48vmin",
-          height: "48vmin",
-          left: "30%",
-          top: "20%",
-          background:
-            "radial-gradient(circle, rgba(255,255,255,0.025) 0%, rgba(0,0,0,0) 65%)",
-          filter: "blur(40px)",
-          transform: "translate(-50%, -50%)"
-        }}
-        animate={{
-          x: [-10, 14, -10],
-          y: [8, -10, 8]
-        }}
-        transition={{
-          duration: 88,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 12
-        }}
-      />
+      {clouds.map((c, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: `${c.width}vmin`,
+            height: `${c.width}vmin`,
+            left: c.left,
+            top: c.top,
+            background: c.g,
+            filter: `blur(${c.blur}px)`,
+            transform: "translate(-50%, -50%)"
+          }}
+          animate={{ x: c.x, y: c.y, scale: c.scale }}
+          transition={{
+            duration: c.dur,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: c.delay
+          }}
+        />
+      ))}
     </div>
   );
 }
@@ -348,12 +425,14 @@ function NebulaClouds() {
 /* -------------------------------------------------------------------------- */
 
 function StreakLayer() {
-  // Two streaks fire at offset intervals — sparse and atmospheric, not
-  // a constant motion. Each line eases across the screen and fades.
+  // Sparse streaks fire at offset intervals — atmospheric, not a
+  // constant motion. Each line eases across the screen and fades.
   const STREAKS = [
-    { y: "22%", angle: -8, duration: 3.2, delay: 0, gap: 14 },
-    { y: "78%", angle: 6, duration: 3.6, delay: 7, gap: 18 },
-    { y: "46%", angle: -3, duration: 2.8, delay: 13, gap: 22 }
+    { y: "16%", angle: -8, duration: 3.0, delay: 0, gap: 16 },
+    { y: "32%", angle: 4, duration: 3.4, delay: 9, gap: 22 },
+    { y: "52%", angle: -3, duration: 2.8, delay: 4, gap: 28 },
+    { y: "68%", angle: 7, duration: 3.6, delay: 18, gap: 24 },
+    { y: "86%", angle: -5, duration: 3.2, delay: 12, gap: 30 }
   ];
 
   return (
@@ -552,13 +631,18 @@ function Rings() {
   // Each ring is a circle that rotates as a single rigid body — its
   // satellites are positioned on the ring's perimeter and ride along
   // with it. Rotating a perfect circle alone is invisible; the dots
-  // give the rotation something the eye can track.
+  // give the rotation something the eye can track. Each ring also
+  // breathes opacity on a long cycle so the orbital field never feels
+  // frozen.
   return (
     <>
       {RINGS.map((r, i) => {
         const keyframe = ["wjcOrbitRingA", "wjcOrbitRingB", "wjcOrbitRingC", "wjcOrbitRingD"][i % 4];
+        const breatheLow = r.opacity * 0.7;
+        const breatheHigh = Math.min(r.opacity * 1.15, 0.95);
+        const breatheDur = 11 + i * 2.4;
         return (
-          <div
+          <motion.div
             key={i}
             className="absolute left-1/2 top-1/2"
             style={{
@@ -566,11 +650,19 @@ function Rings() {
               height: `${r.size}vmin`,
               transform: "translate(-50%, -50%)"
             }}
+            animate={{ opacity: [breatheLow / r.opacity, breatheHigh / r.opacity, breatheLow / r.opacity] }}
+            transition={{
+              duration: breatheDur,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: i * 1.4
+            }}
           >
             <div
               className="relative h-full w-full rounded-full"
               style={{
                 border: `1px solid rgba(255, 255, 255, ${r.opacity})`,
+                boxShadow: `0 0 ${24 + i * 6}px rgba(255,255,255,${0.04 + i * 0.012}) inset`,
                 animation: `${keyframe} ${r.duration}s linear infinite${r.reverse ? " reverse" : ""}`
               }}
             >
@@ -590,13 +682,13 @@ function Rings() {
                       height: s.size,
                       transform: "translate(-50%, -50%)",
                       boxShadow:
-                        "0 0 6px rgba(255,255,255,0.65), 0 0 12px rgba(255,255,255,0.25)"
+                        "0 0 6px rgba(255,255,255,0.65), 0 0 14px rgba(255,255,255,0.3)"
                     }}
                   />
                 );
               })}
             </div>
-          </div>
+          </motion.div>
         );
       })}
     </>
@@ -869,16 +961,27 @@ function AtmosphericLabels() {
 }
 
 function Headline({ active }: { active: boolean }) {
+  // Headline enters with blur fade, then breathes opacity subtly so it
+  // feels like part of the living composition rather than a static
+  // overlay.
   return (
     <motion.h1
       initial={{ opacity: 0, y: 16, filter: "blur(8px)" }}
       animate={
         active
-          ? { opacity: 1, y: 0, filter: "blur(0px)" }
+          ? { opacity: [0.92, 1, 0.92], y: 0, filter: "blur(0px)" }
           : { opacity: 0, y: 16, filter: "blur(8px)" }
       }
-      transition={{ duration: 1.8, delay: 0.4, ease: EASE }}
-      className="absolute bottom-12 left-6 z-10 max-w-[26rem] font-display text-[clamp(2.5rem,5vw,5.25rem)] font-normal leading-[0.98] text-white md:bottom-16 md:left-12 md:max-w-[32rem]"
+      transition={
+        active
+          ? {
+              opacity: { duration: 9, repeat: Infinity, ease: "easeInOut" },
+              y: { duration: 1.8, delay: 0.4, ease: EASE },
+              filter: { duration: 1.8, delay: 0.4, ease: EASE }
+            }
+          : { duration: 1.8, delay: 0.4, ease: EASE }
+      }
+      className="absolute bottom-12 left-6 z-30 max-w-[26rem] font-display text-[clamp(2.5rem,5vw,5.25rem)] font-normal leading-[0.98] text-white md:bottom-16 md:left-12 md:max-w-[32rem]"
       style={{ textShadow: "0 2px 24px rgba(0,0,0,0.7)" }}
     >
       The infrastructure for modern influence.
