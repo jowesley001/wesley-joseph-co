@@ -83,7 +83,7 @@ export function CinematicHomepage() {
   return (
     <>
       {/* Eclipse intro layer — fixed full-screen overlay. Once we enter
-          the homepage phase the Spline canvas is fully unmounted so its
+          the homepage phase the native canvas is fully unmounted so its
           render loop stops painting on top of the orbit composition. */}
       {phase === "intro" || phase === "transition" ? (
         <motion.div
