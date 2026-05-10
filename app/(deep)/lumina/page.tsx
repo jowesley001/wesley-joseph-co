@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 export const metadata: Metadata = {
   title: "Lumina Media",
   description:
-    "Lumina Media is the in-house photo and video production arm of Wesley Joseph Co. Visual storytelling elevated."
+    "Lumina Media is the in-house photo and video production arm of Wesley Joseph. Visual storytelling elevated."
 };
 
 const services = [

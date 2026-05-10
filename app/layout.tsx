@@ -45,7 +45,6 @@ export const metadata: Metadata = {
   publisher: SITE.name,
   keywords: [
     "Wesley Joseph",
-    "Wesley Joseph Co.",
     "Wesley Insider",
     "Wesley Insider Network",
     "Lumina Media",

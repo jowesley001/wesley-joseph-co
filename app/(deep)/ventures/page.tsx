@@ -6,7 +6,7 @@ import { ventures } from "@/content/ventures";
 export const metadata: Metadata = {
   title: "Ventures",
   description:
-    "The three ventures of Wesley Joseph Co.: Lumina Media, Wesley Insider Network, and Wesley Insider."
+    "The three ventures of Wesley Joseph: Lumina Media, Wesley Insider Network, and Wesley Insider."
 };
 
 export default function VenturesPage() {
@@ -16,7 +16,7 @@ export default function VenturesPage() {
         number="00"
         eyebrow="The Ventures"
         title="Three companies. One thesis."
-        body="Wesley Joseph Co. operates three ventures across production, membership, and editorial. Each is a standalone business. Together they compound."
+        body="Wesley Joseph operates three ventures across production, membership, and editorial. Each is a standalone business. Together they compound."
         back={{ label: "Back to home", href: "/" }}
       />
 

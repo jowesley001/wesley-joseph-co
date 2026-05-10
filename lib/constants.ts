@@ -1,10 +1,10 @@
 export const SITE = {
-  name: "Wesley Joseph Co.",
-  shortName: "WJC",
+  name: "Wesley Joseph",
+  shortName: "WJ",
   tagline: "Financial intelligence. Media power. Cultural influence.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://wesleyjoseph.co",
   description:
-    "Wesley Joseph Co. is a holding company and media ecosystem operating at the intersection of media, markets, entrepreneurship, and culture.",
+    "Wesley Joseph is a holding company and media ecosystem operating at the intersection of media, markets, entrepreneurship, and culture.",
   ogImage: "/og.png"
 } as const;
 

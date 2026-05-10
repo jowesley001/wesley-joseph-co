@@ -62,7 +62,7 @@ export function IndexOverlay({ open, onClose }: Props) {
                 animate={{ opacity: [0.6, 1, 0.6] }}
                 transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
               />
-              Wesley Joseph Co.
+              Wesley Joseph
             </Link>
 
             <button
