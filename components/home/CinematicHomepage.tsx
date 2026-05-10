@@ -2,31 +2,21 @@
 
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { MovingParticles } from "@/components/ui/MovingParticles";
 
-// Cinematic sequence (single 14s timeline):
+// Cinematic sequence (single 17s timeline):
 //
-//   0.0 – 10.0s   The Spline eclipse plays alone, undisturbed. Full
-//                 10 seconds so the entire 3D animation completes:
+//   0.0 – 13.0s   The Spline eclipse plays alone, undisturbed. Full
+//                 13 seconds so the entire 3D animation completes:
 //                 moon drifts across the sun, corona forms, totality
-//                 fully develops and holds. Nothing else moves.
-//   10.0 – 12.5s  Only after the full eclipse formation:
-//                   • "WESLEY JOSEPH CO.COM" slowly appears.
-//                   • The eclipse simultaneously shrinks and travels
-//                     rightward, landing inside the O of CO.
-//   12.5 – 14s    Tagline rises. Header lands. Eclipse holds its
-//                 tiny position inside the O. Ambient breathing.
+//                 lands and holds. Nothing else moves on the page.
+//   13.0 – 15.0s  "WESLEY JOSEPH" begins to fade in as a ring of
+//                 typography circling the eclipse.
+//   15.0s+        The ring continues to rotate slowly forever.
+//                 Tagline arrives at 15.5s; header at 15.5s.
+//                 Eclipse keeps breathing and the page stays alive.
 
-const HEADLINE = ["Wesley", "Joseph", "Co.com"];
-
-// Times normalized to 14s:
-//   0.0s   → 0        eclipse playing alone — full formation
-//   10.0s  → 0.714    totality complete, transition begins
-//   11.25s → 0.804    midpoint — eclipse half-shrunk, text half-visible
-//   12.5s  → 0.893    transition complete, eclipse seated in the O
-//   14.0s  → 1        homepage active
-const TIMES = [0, 0.714, 0.804, 0.893, 1] as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const EclipseScene = dynamic(
@@ -38,34 +28,18 @@ export function CinematicHomepage() {
   const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
-    const t = window.setTimeout(() => setIntroComplete(true), 14000);
+    const t = window.setTimeout(() => setIntroComplete(true), 15000);
     return () => window.clearTimeout(t);
   }, []);
 
   return (
     <section className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
-      {/* Spline eclipse — renders at its native composition for the full
-          7-second formation. Only after the scene finishes does the
-          canvas shrink and travel rightward into the O of CO. */}
-      <motion.div
-        initial={{ scale: 1, x: 0, y: 0 }}
-        animate={{
-          scale: [1, 1, 0.4, 0.075, 0.075],
-          x: [0, 0, 160, 320, 320],
-          y: [0, 0, -4, -8, -8]
-        }}
-        transition={{
-          duration: 9.5,
-          times: [...TIMES],
-          ease: EASE
-        }}
-        style={{ transformOrigin: "center", willChange: "transform" }}
-        className="absolute inset-0 z-0"
-      >
+      {/* Spline eclipse — plays at native composition; no shrink */}
+      <div className="absolute inset-0 z-0">
         <EclipseScene />
-      </motion.div>
+      </div>
 
-      {/* HTML particles for atmospheric depth */}
+      {/* HTML particles */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -75,14 +49,14 @@ export function CinematicHomepage() {
         <MovingParticles count={18} intensity="low" seed={3} />
       </motion.div>
 
-      {/* Brand mark — slowly appears in parallel with the eclipse shrinking */}
-      <BrandTypography introComplete={introComplete} />
+      {/* WESLEY JOSEPH circling the eclipse */}
+      <CircularBrandText />
 
-      {/* Tagline emerges last, after the eclipse has settled into the O */}
+      {/* Tagline */}
       <motion.p
         initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
         animate={{ opacity: 0.9, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 1.2, delay: 12.7, ease: EASE }}
+        transition={{ duration: 1.4, delay: 15.5, ease: EASE }}
         className="pointer-events-none absolute bottom-12 left-0 right-0 z-30 px-6 text-center md:bottom-16"
       >
         <motion.span
@@ -101,76 +75,48 @@ export function CinematicHomepage() {
   );
 }
 
-function BrandTypography({ introComplete }: { introComplete: boolean }) {
+function CircularBrandText() {
+  // Repeated text fills the circle so it reads continuously as it rotates.
+  const text =
+    "Wesley Joseph · Wesley Joseph · Wesley Joseph · Wesley Joseph · ";
+
   return (
-    <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center px-6">
-      <motion.div
-        initial={
-          {
-            "--reveal": "0%",
-            opacity: 0,
-            scale: 0.92,
-            filter: "blur(14px)"
-          } as never
-        }
-        animate={
-          {
-            // 5 keyframes synchronized to the master TIMES
-            "--reveal": ["0%", "0%", "60%", "110%", "110%"],
-            opacity: [0, 0, 0.55, 1, 1],
-            scale: [0.92, 0.92, 0.97, 1.06, 1.06],
-            letterSpacing: ["0.45em", "0.45em", "0.32em", "0.18em", "0.18em"],
-            filter: [
-              "blur(14px)",
-              "blur(14px)",
-              "blur(4px)",
-              "blur(0px)",
-              "blur(0px)"
-            ]
-          } as never
-        }
-        transition={{ duration: 14.0, times: [...TIMES], ease: EASE }}
-        style={
-          {
-            maskImage:
-              "linear-gradient(to right, black 0%, black calc(var(--reveal) - 8%), transparent var(--reveal), transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to right, black 0%, black calc(var(--reveal) - 8%), transparent var(--reveal), transparent 100%)"
-          } as CSSProperties
-        }
-        className="text-center"
+    <motion.div
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 2.4, delay: 13.0, ease: EASE }}
+      className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+    >
+      <motion.svg
+        viewBox="0 0 800 800"
+        className="h-[80vh] max-h-[800px] w-[80vh] max-w-[800px]"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
+        aria-hidden
       >
-        <motion.div
-          animate={
-            introComplete
-              ? { opacity: [0.92, 1, 0.92], y: [-2, 2, -2] }
-              : { opacity: 1, y: 0 }
-          }
-          transition={
-            introComplete
-              ? {
-                  opacity: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-                  y: { duration: 10, repeat: Infinity, ease: "easeInOut" }
-                }
-              : { duration: 0 }
-          }
+        <defs>
+          <path
+            id="wjc-circle-path"
+            d="M 400 400 m -340 0 a 340 340 0 1 1 680 0 a 340 340 0 1 1 -680 0"
+            fill="none"
+          />
+        </defs>
+        <text
+          fill="#ffffff"
+          style={{
+            fontFamily: "var(--font-display)",
+            fontSize: 38,
+            letterSpacing: "0.32em",
+            textTransform: "uppercase",
+            fontWeight: 300
+          }}
         >
-          <h1>
-            <span className="sr-only">Wesley Joseph Co.com</span>
-            <span
-              aria-hidden
-              className="flex flex-col items-center gap-2 font-display text-[clamp(2.5rem,11vw,5.5rem)] font-light uppercase leading-[0.95] text-ink md:flex-row md:gap-[0.4em] md:whitespace-nowrap"
-              style={{ textShadow: "0 0 40px rgba(255,255,255,0.18)" }}
-            >
-              {HEADLINE.map((word) => (
-                <span key={word} className="inline-block">
-                  {word}
-                </span>
-              ))}
-            </span>
-          </h1>
-        </motion.div>
-      </motion.div>
-    </div>
+          <textPath href="#wjc-circle-path" startOffset="0">
+            {text + text}
+          </textPath>
+        </text>
+      </motion.svg>
+      <span className="sr-only">Wesley Joseph Co.com</span>
+    </motion.div>
   );
 }
