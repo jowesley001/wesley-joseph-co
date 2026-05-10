@@ -123,6 +123,12 @@ body {
   50%      { opacity: 1;   transform: scale(1.02); }
 }
 
+/* Brand ring — slow rotation around the eclipse */
+@keyframes wjcRingSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* Particle drift — applied per-particle with random delays/durations */
 @keyframes wjcParticleA {
   0%, 100% { transform: translate(0, 0); opacity: 0.32; }

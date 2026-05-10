@@ -78,7 +78,7 @@ export function CinematicHomepage() {
 function CircularBrandText() {
   // Repeated text fills the circle so it reads continuously as it rotates.
   const text =
-    "Wesley Joseph · Wesley Joseph · Wesley Joseph · Wesley Joseph · ";
+    "WESLEY JOSEPH · WESLEY JOSEPH · WESLEY JOSEPH · WESLEY JOSEPH · ";
 
   return (
     <motion.div
@@ -87,35 +87,39 @@ function CircularBrandText() {
       transition={{ duration: 2.4, delay: 13.0, ease: EASE }}
       className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
     >
-      <motion.svg
-        viewBox="0 0 800 800"
+      {/* Wrapper handles rotation via CSS so textPath inside the SVG
+          stays untouched by framer-motion (which can interfere with
+          textPath layout). */}
+      <div
         className="h-[80vh] max-h-[800px] w-[80vh] max-w-[800px]"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
-        aria-hidden
+        style={{ animation: "wjcRingSpin 90s linear infinite" }}
       >
-        <defs>
-          <path
-            id="wjc-circle-path"
-            d="M 400 400 m -340 0 a 340 340 0 1 1 680 0 a 340 340 0 1 1 -680 0"
-            fill="none"
-          />
-        </defs>
-        <text
-          fill="#ffffff"
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: 38,
-            letterSpacing: "0.32em",
-            textTransform: "uppercase",
-            fontWeight: 300
-          }}
+        <svg
+          viewBox="0 0 800 800"
+          className="h-full w-full"
+          aria-hidden
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <textPath href="#wjc-circle-path" startOffset="0">
-            {text + text}
-          </textPath>
-        </text>
-      </motion.svg>
+          <defs>
+            <path
+              id="wjc-circle-path"
+              d="M 400 400 m -340 0 a 340 340 0 1 1 680 0 a 340 340 0 1 1 -680 0"
+              fill="none"
+            />
+          </defs>
+          <text
+            fill="#ffffff"
+            fontSize="38"
+            letterSpacing="10"
+            fontWeight="300"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            <textPath href="#wjc-circle-path" startOffset="0">
+              {text + text}
+            </textPath>
+          </text>
+        </svg>
+      </div>
       <span className="sr-only">Wesley Joseph Co.com</span>
     </motion.div>
   );
