@@ -826,7 +826,7 @@ function VentureNodes({
   //   01 LUMINA MEDIA            → 258° (top, slightly left of vertical)
   //   02 WESLEY INSIDER NETWORK  → 340° (upper-right, above eclipse)
   //   03 WESLEY INSIDER          → 100° (bottom, slightly right of vertical)
-  //   04 CREATIVE COMMUNITY      → 30° (lower-right, creator orbit)
+  //   04 CREATIVE COMMUNITY      → 165° (left arc, under Wealth)
   const nodes = [
     {
       v: ventures[0],
@@ -854,8 +854,8 @@ function VentureNodes({
     },
     {
       v: ventures[3],
-      angle: 30,
-      ring: 74,
+      angle: 165,
+      ring: 82,
       labelPlacement: "right" as const,
       driftPx: 9,
       driftDuration: 34
