@@ -12,11 +12,15 @@ type Props = {
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// The orbital system is anchored slightly right of center so the big
-// editorial headline on the left can breathe. All orbital coordinates
-// (rings, eclipse, ventures, labels, satellites) are computed off this
-// single anchor so the composition stays cohesive at any viewport.
-const ORBIT_ANCHOR = { left: "62%", top: "54%" } as const;
+// The orbital ring system is anchored slightly right of viewport center
+// so the big editorial headline on the left can breathe. The eclipse is
+// then offset *within* the rings into the lower-right quadrant — it
+// sits inside the orbital field rather than at its mathematical center,
+// matching the planetary-diagram composition of the reference.
+const ORBIT_ANCHOR = { left: "54%", top: "50%" } as const;
+// Eclipse offset from the ring-system center, expressed in vmin so it
+// scales uniformly with the rings.
+const ECLIPSE_OFFSET = { x: 14, y: 12 } as const;
 
 export function OrbitHomepage({ active }: Props) {
   return (
@@ -40,7 +44,7 @@ function AmbientField() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 70% 70% at 62% 54%, rgba(255,255,255,0.08), rgba(0,0,0,0) 65%)",
+            "radial-gradient(ellipse 70% 70% at 54% 50%, rgba(255,255,255,0.08), rgba(0,0,0,0) 65%)",
           backgroundSize: "120% 120%",
           animation: "wjcAmbientGradient 24s ease-in-out infinite"
         }}
@@ -50,7 +54,7 @@ function AmbientField() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at 62% 54%, rgba(255,255,255,0.04), rgba(0,0,0,0) 55%)"
+            "radial-gradient(circle at 54% 50%, rgba(255,255,255,0.04), rgba(0,0,0,0) 55%)"
         }}
       />
       <div className="pointer-events-none absolute inset-0">
@@ -178,14 +182,16 @@ function Satellites() {
 function EclipseCore() {
   // The eclipse reads as a dark sphere with a bright sun rim on the
   // right — light source fixed at 2 o'clock, gentle breathing on the
-  // outer halo, no rotation so the composition stays anchored.
+  // outer halo, no rotation so the composition stays anchored. It sits
+  // offset from the ring-system center into the lower-right quadrant,
+  // matching the planetary-diagram composition of the reference.
   return (
     <div
       className="absolute left-1/2 top-1/2"
       style={{
         width: "24vmin",
         height: "24vmin",
-        transform: "translate(-50%, -50%)"
+        transform: `translate(-50%, -50%) translate(${ECLIPSE_OFFSET.x}vmin, ${ECLIPSE_OFFSET.y}vmin)`
       }}
     >
       {/* Wide soft halo — gives the eclipse a gravitational presence */}
@@ -250,30 +256,30 @@ function EclipseCore() {
 }
 
 function VentureNodes() {
-  // Three ventures sit on the third ring (radius 60vmin) at clean
-  // angular positions: top, right, bottom. They form a vertical-leaning
-  // triangle with the eclipse anchored at center.
-  //   01 LUMINA MEDIA            → 270° (top)
-  //   02 WESLEY INSIDER NETWORK  →   0° (right)
-  //   03 WESLEY INSIDER          →  90° (bottom)
-  const RING = 76;
+  // Three ventures ride the orbital rings at angular positions that
+  // mirror the reference layout. Angles are around the *ring-system*
+  // center (not the eclipse) so the venture triangle continues to read
+  // as the orbital perimeter even though the eclipse is offset.
+  //   01 LUMINA MEDIA            → 258° (top, slightly left of vertical)
+  //   02 WESLEY INSIDER NETWORK  → 340° (upper-right, above eclipse)
+  //   03 WESLEY INSIDER          → 100° (bottom, slightly right of vertical)
   const nodes = [
     {
       v: ventures[0], // Lumina Media
-      angle: 270,
-      align: "items-center" as const,
+      angle: 258,
+      ring: 76,
       labelPlacement: "below" as const
     },
     {
       v: ventures[1], // Wesley Insider Network
-      angle: 0,
-      align: "items-start" as const,
+      angle: 340,
+      ring: 60,
       labelPlacement: "right" as const
     },
     {
       v: ventures[2], // Wesley Insider
-      angle: 90,
-      align: "items-center" as const,
+      angle: 100,
+      ring: 76,
       labelPlacement: "below" as const
     }
   ];
@@ -282,8 +288,8 @@ function VentureNodes() {
     <>
       {nodes.map((n, i) => {
         const rad = (n.angle * Math.PI) / 180;
-        const dx = ((Math.cos(rad) * RING) / 2).toFixed(3);
-        const dy = ((Math.sin(rad) * RING) / 2).toFixed(3);
+        const dx = ((Math.cos(rad) * n.ring) / 2).toFixed(3);
+        const dy = ((Math.sin(rad) * n.ring) / 2).toFixed(3);
         const number = String(i + 1).padStart(2, "0");
         return (
           <div
