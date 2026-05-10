@@ -51,28 +51,29 @@ export function CinematicHomepage() {
 
   return (
     <>
-      {/* Eclipse intro layer — fixed full-screen overlay */}
-      <motion.div
-        aria-hidden={phase === "homepage"}
-        initial={{ opacity: 1, scale: 1 }}
-        animate={{
-          opacity: eclipseFading ? 0 : 1,
-          scale: eclipseFading ? 1.08 : 1
-        }}
-        transition={{
-          duration: TRANSITION_MS / 1000,
-          ease: EASE
-        }}
-        className={`fixed inset-0 z-40 ${
-          phase === "homepage" ? "pointer-events-none" : ""
-        }`}
-        style={{
-          willChange: "opacity, transform",
-          visibility: phase === "homepage" ? "hidden" : "visible"
-        }}
-      >
-        <EclipseScene />
-      </motion.div>
+      {/* Eclipse intro layer — fixed full-screen overlay. Once we enter
+          the homepage phase the Spline canvas is fully unmounted so its
+          render loop stops painting on top of the orbit composition. */}
+      {phase !== "homepage" ? (
+        <motion.div
+          aria-hidden={phase !== "intro"}
+          initial={{ opacity: 1, scale: 1 }}
+          animate={{
+            opacity: eclipseFading ? 0 : 1,
+            scale: eclipseFading ? 1.08 : 1
+          }}
+          transition={{
+            duration: TRANSITION_MS / 1000,
+            ease: EASE
+          }}
+          className={`fixed inset-0 z-40 ${
+            phase !== "intro" ? "pointer-events-none" : ""
+          }`}
+          style={{ willChange: "opacity, transform" }}
+        >
+          <EclipseScene />
+        </motion.div>
+      ) : null}
 
       {/* Orbit homepage — underneath, fades in as eclipse dissolves */}
       <motion.div
