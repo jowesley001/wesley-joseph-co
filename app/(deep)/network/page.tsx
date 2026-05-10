@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { VentureReplicaPage } from "@/components/ventures/VenturePageSystem";
+import {
+  VentureCTA,
+  VentureCapabilities,
+  VentureHero,
+  VentureManifesto,
+  VenturePageShell,
+  VentureVisualPanel
+} from "@/components/ventures/VenturePageSystem";
 
 export const metadata: Metadata = {
   title: "Wesley Insider Network",
@@ -7,80 +14,71 @@ export const metadata: Metadata = {
     "A private multi-state business membership for operators, owners, and capital allocators."
 };
 
-const links = [
+const cta = {
+  label: "Apply to the network",
+  href: "mailto:network@wesleyjoseph.co"
+};
+
+const capabilities = [
   {
-    label: "Wesley Joseph Co.",
-    href: "/",
-    rect: { left: 5.3, top: 5.3, width: 23, height: 2.5 }
+    title: "Private events",
+    icon: "event" as const,
+    body: "Exclusive events in key cities with high-level founders and investors."
   },
   {
-    label: "Ventures",
-    href: "/ventures",
-    rect: { left: 51.5, top: 5.3, width: 8.5, height: 2.5 }
+    title: "Founder connections",
+    icon: "connection" as const,
+    body: "Meaningful introductions to operators, investors, and industry leaders."
   },
   {
-    label: "About",
-    href: "/",
-    rect: { left: 63.5, top: 5.3, width: 7, height: 2.5 }
+    title: "Business opportunities",
+    icon: "opportunity" as const,
+    body: "Curated opportunities across industries and markets."
   },
   {
-    label: "Journal",
-    href: "/insider",
-    rect: { left: 74.2, top: 5.3, width: 8, height: 2.5 }
+    title: "Strategic introductions",
+    icon: "intro" as const,
+    body: "We connect you to the right people at the right time."
   },
   {
-    label: "Contact",
-    href: "mailto:hello@wesleyjoseph.co",
-    rect: { left: 85.5, top: 5.3, width: 8.5, height: 2.5 }
-  },
-  {
-    label: "Apply to the network",
-    href: "mailto:network@wesleyjoseph.co",
-    rect: { left: 7.3, top: 31, width: 32, height: 3.2 }
-  },
-  {
-    label: "Learn more",
-    href: "/ventures",
-    rect: { left: 7.3, top: 78.1, width: 18, height: 3 }
-  },
-  {
-    label: "Apply now",
-    href: "mailto:network@wesleyjoseph.co",
-    rect: { left: 36, top: 90, width: 28, height: 4 }
-  },
-  {
-    label: "Wesley Joseph Co.",
-    href: "/",
-    rect: { left: 5.3, top: 96.2, width: 23, height: 2.5 }
-  },
-  {
-    label: "Footer ventures",
-    href: "/ventures",
-    rect: { left: 54.5, top: 96.2, width: 8.2, height: 2.4 }
-  },
-  {
-    label: "Footer about",
-    href: "/",
-    rect: { left: 65, top: 96.2, width: 6.8, height: 2.4 }
-  },
-  {
-    label: "Footer journal",
-    href: "/insider",
-    rect: { left: 75.3, top: 96.2, width: 7.8, height: 2.4 }
-  },
-  {
-    label: "Footer contact",
-    href: "mailto:hello@wesleyjoseph.co",
-    rect: { left: 86.2, top: 96.2, width: 8, height: 2.4 }
+    title: "Member resources",
+    icon: "resource" as const,
+    body: "Tools, templates, and resources to help you scale and lead."
   }
 ];
 
+const visual = {
+  src: "/ventures/wesley-insider-network.png",
+  alt: "Black and white network map of city lights and connection lines.",
+  position: "65% center"
+};
+
 export default function NetworkPage() {
   return (
-    <VentureReplicaPage
-      column={1}
-      title="Wesley Insider Network"
-      links={links}
-    />
+    <VenturePageShell title="Wesley Insider Network">
+      <VentureHero
+        index="02"
+        name="Wesley Insider Network"
+        positioning="A private multi-state business membership for operators, owners, and capital allocators."
+        cta={cta}
+        visual={visual}
+      />
+      <VentureManifesto
+        statement="Access changes everything. We connect exceptional people to exceptional opportunities."
+        visual={{ ...visual, position: "58% center" }}
+      />
+      <VentureCapabilities label="What we provide" items={capabilities} />
+      <VentureVisualPanel
+        visual={{ ...visual, position: "55% center" }}
+        headline="A global network built on trust."
+        body="Different backgrounds. Same standard."
+        cta={{ label: "Learn more", href: "/ventures" }}
+      />
+      <VentureCTA
+        kicker="Ready to join the inner circle?"
+        line="Apply to the network."
+        cta={cta}
+      />
+    </VenturePageShell>
   );
 }

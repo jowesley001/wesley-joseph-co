@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { VentureReplicaPage } from "@/components/ventures/VenturePageSystem";
+import {
+  VentureCTA,
+  VentureCapabilities,
+  VentureHero,
+  VentureManifesto,
+  VenturePageShell,
+  VentureVisualPanel
+} from "@/components/ventures/VenturePageSystem";
 
 export const metadata: Metadata = {
   title: "Lumina Media",
@@ -7,74 +14,71 @@ export const metadata: Metadata = {
     "Photo, video, and podcast production for founders, brands, and modern creators."
 };
 
-const links = [
+const cta = {
+  label: "Start a Lumina project",
+  href: "mailto:lumina@wesleyjoseph.co"
+};
+
+const capabilities = [
   {
-    label: "Wesley Joseph Co.",
-    href: "/",
-    rect: { left: 5.3, top: 5.3, width: 23, height: 2.5 }
+    title: "Photography",
+    icon: "camera" as const,
+    body: "Cinematic photography that captures your story with intention."
   },
   {
-    label: "Ventures",
-    href: "/ventures",
-    rect: { left: 51.5, top: 5.3, width: 8.5, height: 2.5 }
+    title: "Video production",
+    icon: "video" as const,
+    body: "High-end video production built for founders and modern brands."
   },
   {
-    label: "About",
-    href: "/",
-    rect: { left: 63.5, top: 5.3, width: 7, height: 2.5 }
+    title: "Podcast production",
+    icon: "podcast" as const,
+    body: "Podcast production that sounds incredible and looks iconic."
   },
   {
-    label: "Journal",
-    href: "/insider",
-    rect: { left: 74.2, top: 5.3, width: 8, height: 2.5 }
+    title: "Short-form clips",
+    icon: "clips" as const,
+    body: "Viral-ready clips that extend your reach and grow your audience."
   },
   {
-    label: "Contact",
-    href: "mailto:hello@wesleyjoseph.co",
-    rect: { left: 85.5, top: 5.3, width: 8.5, height: 2.5 }
-  },
-  {
-    label: "Start a Lumina project",
-    href: "mailto:lumina@wesleyjoseph.co",
-    rect: { left: 7.3, top: 29.4, width: 31, height: 3.2 }
-  },
-  {
-    label: "Watch showreel",
-    href: "mailto:lumina@wesleyjoseph.co",
-    rect: { left: 7.3, top: 78.1, width: 22, height: 3 }
-  },
-  {
-    label: "Start a Lumina project",
-    href: "mailto:lumina@wesleyjoseph.co",
-    rect: { left: 32.8, top: 90, width: 34.5, height: 4 }
-  },
-  {
-    label: "Wesley Joseph Co.",
-    href: "/",
-    rect: { left: 5.3, top: 96.2, width: 23, height: 2.5 }
-  },
-  {
-    label: "Footer ventures",
-    href: "/ventures",
-    rect: { left: 54.5, top: 96.2, width: 8.2, height: 2.4 }
-  },
-  {
-    label: "Footer about",
-    href: "/",
-    rect: { left: 65, top: 96.2, width: 6.8, height: 2.4 }
-  },
-  {
-    label: "Footer journal",
-    href: "/insider",
-    rect: { left: 75.3, top: 96.2, width: 7.8, height: 2.4 }
-  },
-  {
-    label: "Footer contact",
-    href: "mailto:hello@wesleyjoseph.co",
-    rect: { left: 86.2, top: 96.2, width: 8, height: 2.4 }
+    title: "Founder media kits",
+    icon: "kit" as const,
+    body: "Strategic media kits that position you for bigger opportunities."
   }
 ];
 
+const visual = {
+  src: "/ventures/lumina-media.png",
+  alt: "Black and white cinema camera on a production set with studio lighting.",
+  position: "62% center"
+};
+
 export default function LuminaPage() {
-  return <VentureReplicaPage column={0} title="Lumina Media" links={links} />;
+  return (
+    <VenturePageShell title="Lumina Media">
+      <VentureHero
+        index="01"
+        name="Lumina Media"
+        positioning="Photo, video, and podcast production for founders, brands, and modern creators."
+        cta={cta}
+        visual={visual}
+      />
+      <VentureManifesto
+        statement="We create visual stories that build influence, inspire trust, and stand the test of time."
+        visual={{ ...visual, position: "50% center" }}
+      />
+      <VentureCapabilities label="What we do" items={capabilities} />
+      <VentureVisualPanel
+        visual={{ ...visual, position: "58% center" }}
+        headline="Visuals that move culture."
+        body="From concept to final cut, we handle every detail."
+        cta={{ label: "Watch showreel", href: "mailto:lumina@wesleyjoseph.co" }}
+      />
+      <VentureCTA
+        kicker="Ready to create something iconic?"
+        line="Let's build your story."
+        cta={cta}
+      />
+    </VenturePageShell>
+  );
 }
