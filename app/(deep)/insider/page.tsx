@@ -28,20 +28,19 @@ export default function InsiderPage() {
 
       <section className="relative bg-bg">
         <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
-          <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-10 gap-y-14 md:grid-cols-4 md:gap-y-16">
             {beats.map((beat, i) => (
-              <div key={beat} className="border-t border-line pt-6">
+              <div key={beat}>
                 <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-muted">
                   <span className="text-ink">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="mx-2 inline-block h-px w-6 bg-current align-middle" />
-                  Beat
+                  <span className="ml-6">Beat</span>
                 </p>
                 <h3 className="mt-6 font-display text-2xl text-ink md:text-3xl">{beat}</h3>
               </div>
             ))}
           </div>
 
-          <div className="mt-20 border-t border-line pt-12">
+          <div className="mt-32">
             <Link
               href="https://wesleyinsider.com"
               target="_blank"

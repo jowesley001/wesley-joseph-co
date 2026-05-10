@@ -36,13 +36,12 @@ export default function NetworkPage() {
 
       <section className="relative bg-bg">
         <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
-          <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-16 md:grid-cols-3 md:gap-x-12 md:gap-y-20">
             {pillars.map((p, i) => (
-              <div key={p.title} className="border-t border-line pt-8">
+              <div key={p.title}>
                 <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-muted">
                   <span className="text-ink">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="mx-2 inline-block h-px w-6 bg-current align-middle" />
-                  Pillar
+                  <span className="ml-6">Pillar</span>
                 </p>
                 <h3 className="mt-6 font-display text-3xl text-ink">{p.title}</h3>
                 <p className="mt-4 font-sans text-base text-ink-soft leading-relaxed">{p.body}</p>
@@ -50,7 +49,7 @@ export default function NetworkPage() {
             ))}
           </div>
 
-          <div className="mt-20 border-t border-line pt-12">
+          <div className="mt-32">
             <Link
               href="mailto:network@wesleyjoseph.co"
               className="group inline-flex items-center gap-4 font-mono text-[12px] uppercase tracking-[0.32em] text-ink"

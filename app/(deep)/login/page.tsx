@@ -35,8 +35,7 @@ export default function LoginPage() {
       >
         <p className="font-mono text-eyebrow uppercase text-ink-subtle">
           <span className="text-ink">00</span>
-          <span aria-hidden className="mx-3 inline-block h-px w-10 bg-current align-middle" />
-          Member Access
+          <span className="ml-7">Member Access</span>
         </p>
 
         <h1 className="mt-10 font-display text-display-md text-ink">Sign in</h1>

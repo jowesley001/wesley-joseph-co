@@ -22,17 +22,16 @@ export default function VenturesPage() {
 
       <section className="relative bg-bg">
         <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
-          <div className="flex flex-col gap-16">
+          <div className="flex flex-col gap-24 md:gap-28">
             {ventures.map((v, i) => (
               <article
                 key={v.id}
-                className="grid grid-cols-1 gap-8 border-t border-line pt-12 md:grid-cols-12"
+                className="grid grid-cols-1 gap-8 md:grid-cols-12"
               >
                 <div className="md:col-span-4">
                   <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-muted">
                     <span className="text-ink">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="mx-2 inline-block h-px w-6 bg-current align-middle" />
-                    {v.category}
+                    <span className="ml-6">{v.category}</span>
                   </p>
                   <h2 className="mt-6 font-display text-display-md text-ink">{v.name}</h2>
                 </div>

@@ -46,8 +46,7 @@ export function PageHeader({ number, eyebrow, title, body, back }: Props) {
           className="font-mono text-eyebrow uppercase text-ink-subtle"
         >
           <span className="text-ink">{number}</span>
-          <span aria-hidden className="mx-3 inline-block h-px w-10 bg-current align-middle" />
-          {eyebrow}
+          <span className="ml-7">{eyebrow}</span>
         </motion.p>
 
         <motion.h1

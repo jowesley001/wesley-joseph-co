@@ -29,13 +29,12 @@ export default function LuminaPage() {
 
       <section className="relative bg-bg">
         <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-16 md:grid-cols-2 md:gap-x-16 md:gap-y-20">
             {services.map((s, i) => (
-              <div key={s.name} className="border-t border-line pt-8">
+              <div key={s.name}>
                 <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-muted">
                   <span className="text-ink">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="mx-2 inline-block h-px w-6 bg-current align-middle" />
-                  Service
+                  <span className="ml-6">Service</span>
                 </p>
                 <h3 className="mt-6 font-display text-3xl text-ink">{s.name}</h3>
                 <p className="mt-4 max-w-md font-sans text-base text-ink-soft leading-relaxed">
@@ -45,7 +44,7 @@ export default function LuminaPage() {
             ))}
           </div>
 
-          <div className="mt-20 border-t border-line pt-12">
+          <div className="mt-32">
             <Link
               href="mailto:lumina@wesleyjoseph.co"
               className="group inline-flex items-center gap-4 font-mono text-[12px] uppercase tracking-[0.32em] text-ink"
