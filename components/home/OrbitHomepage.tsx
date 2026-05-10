@@ -40,8 +40,10 @@ export function OrbitHomepage({ active }: Props) {
   return (
     <div className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
       <StarField px={px} py={py} />
+      <NebulaClouds />
       <AmbientField />
-      <OrbitalSystem active={active} />
+      <OrbitalSystem active={active} px={px} py={py} />
+      <StreakLayer />
       <Headline active={active} />
       <BottomStatus active={active} />
     </div>
@@ -260,6 +262,134 @@ function StarDot({ star, glow = false }: { star: Star; glow?: boolean }) {
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Nebula clouds — soft drifting greyscale gradient blobs for depth.           */
+/* -------------------------------------------------------------------------- */
+
+function NebulaClouds() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0">
+      <motion.div
+        className="absolute rounded-full"
+        style={{
+          width: "70vmin",
+          height: "70vmin",
+          left: "12%",
+          top: "62%",
+          background:
+            "radial-gradient(circle, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.018) 35%, rgba(0,0,0,0) 70%)",
+          filter: "blur(28px)",
+          transform: "translate(-50%, -50%)"
+        }}
+        animate={{
+          x: [-20, 18, -20],
+          y: [-12, 14, -12],
+          scale: [1, 1.08, 1]
+        }}
+        transition={{
+          duration: 60,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute rounded-full"
+        style={{
+          width: "55vmin",
+          height: "55vmin",
+          left: "82%",
+          top: "20%",
+          background:
+            "radial-gradient(circle, rgba(255,255,255,0.038) 0%, rgba(255,255,255,0.012) 40%, rgba(0,0,0,0) 70%)",
+          filter: "blur(34px)",
+          transform: "translate(-50%, -50%)"
+        }}
+        animate={{
+          x: [12, -16, 12],
+          y: [10, -8, 10],
+          scale: [1.05, 1, 1.05]
+        }}
+        transition={{
+          duration: 72,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 4
+        }}
+      />
+      <motion.div
+        className="absolute rounded-full"
+        style={{
+          width: "48vmin",
+          height: "48vmin",
+          left: "30%",
+          top: "20%",
+          background:
+            "radial-gradient(circle, rgba(255,255,255,0.025) 0%, rgba(0,0,0,0) 65%)",
+          filter: "blur(40px)",
+          transform: "translate(-50%, -50%)"
+        }}
+        animate={{
+          x: [-10, 14, -10],
+          y: [8, -10, 8]
+        }}
+        transition={{
+          duration: 88,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 12
+        }}
+      />
+    </div>
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Streak layer — occasional thin white streaks crossing the field.            */
+/* -------------------------------------------------------------------------- */
+
+function StreakLayer() {
+  // Two streaks fire at offset intervals — sparse and atmospheric, not
+  // a constant motion. Each line eases across the screen and fades.
+  const STREAKS = [
+    { y: "22%", angle: -8, duration: 3.2, delay: 0, gap: 14 },
+    { y: "78%", angle: 6, duration: 3.6, delay: 7, gap: 18 },
+    { y: "46%", angle: -3, duration: 2.8, delay: 13, gap: 22 }
+  ];
+
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      {STREAKS.map((s, i) => (
+        <motion.span
+          key={i}
+          className="absolute h-px"
+          style={{
+            left: 0,
+            top: s.y,
+            width: "22vw",
+            background:
+              "linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 45%, rgba(255,255,255,0.85) 60%, rgba(255,255,255,0) 100%)",
+            transformOrigin: "left center",
+            transform: `rotate(${s.angle}deg)`
+          }}
+          initial={{ x: "-30vw", opacity: 0 }}
+          animate={{
+            x: ["-30vw", "120vw"],
+            opacity: [0, 0.9, 0]
+          }}
+          transition={{
+            duration: s.duration,
+            delay: s.delay,
+            repeat: Infinity,
+            repeatDelay: s.gap,
+            ease: "easeOut",
+            times: [0, 0.5, 1]
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function BrightStar({
   x,
   y,
@@ -346,7 +476,20 @@ const RINGS = [
   }
 ];
 
-function OrbitalSystem({ active }: { active: boolean }) {
+function OrbitalSystem({
+  active,
+  px,
+  py
+}: {
+  active: boolean;
+  px: ReturnType<typeof useMotionValue<number>>;
+  py: ReturnType<typeof useMotionValue<number>>;
+}) {
+  // Whole-system camera parallax — the orbit drifts opposite to the
+  // pointer for a "floating in space" feel.
+  const camX = useTransform(px, (v) => v * -16);
+  const camY = useTransform(py, (v) => v * -12);
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.96 }}
@@ -354,19 +497,53 @@ function OrbitalSystem({ active }: { active: boolean }) {
       transition={{ duration: 2.4, ease: EASE }}
       className="pointer-events-none absolute inset-0"
     >
-      <div
-        className="absolute"
-        style={{
-          left: ORBIT_ANCHOR.left,
-          top: ORBIT_ANCHOR.top,
-          transform: "translate(-50%, -50%)"
-        }}
+      {/* Camera-style parallax + slow continuous drift — the whole
+          composition gently floats in space, responding to the cursor
+          and oscillating on its own. */}
+      <motion.div
+        className="absolute inset-0"
+        style={{ x: camX, y: camY }}
       >
-        <Rings />
-        <AtmosphericLabels />
-        <EclipseCore />
-        <VentureNodes />
-      </div>
+        <motion.div
+          className="absolute inset-0"
+          animate={{
+            x: [-14, 12, -14],
+            y: [-8, 10, -8]
+          }}
+          transition={{
+            duration: 42,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <div
+            className="absolute"
+            style={{
+              left: ORBIT_ANCHOR.left,
+              top: ORBIT_ANCHOR.top,
+              transform: "translate(-50%, -50%)"
+            }}
+          >
+            {/* Whole ring group slowly rotates as one — satellites
+                ride the rotation as one celestial mechanism. */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 320,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{ position: "relative", width: 0, height: 0 }}
+            >
+              <Rings />
+            </motion.div>
+
+            <AtmosphericLabels />
+            <EclipseCore />
+            <VentureNodes />
+          </div>
+        </motion.div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -427,15 +604,29 @@ function Rings() {
 }
 
 function EclipseCore() {
+  // Eclipse is a living celestial body: it breathes, drifts inside the
+  // orbital field, and the bright sun rim slowly sweeps around the disc
+  // edge as if the moon is rotating in front of the sun.
   return (
-    <div
+    <motion.div
       className="absolute left-1/2 top-1/2"
       style={{
         width: "24vmin",
         height: "24vmin",
         transform: `translate(-50%, -50%) translate(${ECLIPSE_OFFSET.x}vmin, ${ECLIPSE_OFFSET.y}vmin)`
       }}
+      animate={{
+        x: [-6, 5, -6],
+        y: [-3, 4, -3],
+        scale: [1, 1.04, 1]
+      }}
+      transition={{
+        x: { duration: 38, repeat: Infinity, ease: "easeInOut" },
+        y: { duration: 32, repeat: Infinity, ease: "easeInOut" },
+        scale: { duration: 7, repeat: Infinity, ease: "easeInOut" }
+      }}
     >
+      {/* Wide soft halo — gravitational presence, breathes with the disc */}
       <div
         aria-hidden
         className="absolute left-1/2 top-1/2 rounded-full"
@@ -444,17 +635,20 @@ function EclipseCore() {
           height: "260%",
           transform: "translate(-50%, -50%)",
           background:
-            "radial-gradient(circle, rgba(255,255,255,0.20) 0%, rgba(255,255,255,0.07) 32%, rgba(0,0,0,0) 60%)",
+            "radial-gradient(circle, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 32%, rgba(0,0,0,0) 60%)",
           animation: "wjcGlowPulse 7s ease-in-out infinite",
           filter: "blur(10px)"
         }}
       />
+      {/* Bright rim — slowly sweeps around the disc as the moon rotates
+          in front of the sun. Two layers: sharp inner + blurred corona. */}
       <div
         aria-hidden
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "conic-gradient(from 60deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.85) 18deg, rgba(255,255,255,1) 30deg, rgba(255,255,255,0.85) 42deg, rgba(255,255,255,0) 70deg, rgba(255,255,255,0) 360deg)"
+            "conic-gradient(from 60deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.85) 18deg, rgba(255,255,255,1) 30deg, rgba(255,255,255,0.85) 42deg, rgba(255,255,255,0) 70deg, rgba(255,255,255,0) 360deg)",
+          animation: "wjcCrescentSweep 90s linear infinite"
         }}
       />
       <div
@@ -462,32 +656,40 @@ function EclipseCore() {
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "conic-gradient(from 50deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.4) 24deg, rgba(255,255,255,0.65) 40deg, rgba(255,255,255,0.4) 56deg, rgba(255,255,255,0) 90deg, rgba(255,255,255,0) 360deg)",
+            "conic-gradient(from 50deg, rgba(255,255,255,0) 0deg, rgba(255,255,255,0.42) 24deg, rgba(255,255,255,0.7) 40deg, rgba(255,255,255,0.42) 56deg, rgba(255,255,255,0) 90deg, rgba(255,255,255,0) 360deg)",
           filter: "blur(6px)",
-          transform: "scale(1.08)"
+          transform: "scale(1.08)",
+          animation: "wjcCrescentSweep 90s linear infinite"
         }}
       />
-      <div
+      {/* Dark sphere body — slowly self-rotates so the surface
+          highlight drifts slightly, reinforcing the celestial feel. */}
+      <motion.div
         aria-hidden
         className="absolute rounded-full"
         style={{
           inset: "4%",
           background:
-            "radial-gradient(circle at 35% 30%, #1a1a1a 0%, #0a0a0a 45%, #000 75%)",
+            "radial-gradient(circle at 35% 30%, #1c1c1c 0%, #0b0b0b 45%, #000 75%)",
           boxShadow:
             "0 0 60px 4px rgba(0,0,0,0.9) inset, 0 12px 60px 8px rgba(0,0,0,0.8)"
         }}
-      />
-      <div
-        aria-hidden
-        className="absolute rounded-full"
-        style={{
-          inset: "8%",
-          background:
-            "radial-gradient(circle at 30% 28%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 25%, rgba(0,0,0,0) 55%)"
-        }}
-      />
-    </div>
+        animate={{ rotate: 360 }}
+        transition={{ duration: 220, repeat: Infinity, ease: "linear" }}
+      >
+        {/* Subtle highlight on the upper-left of the disc — when the
+            disc rotates, this highlight rotates with it. */}
+        <div
+          aria-hidden
+          className="absolute rounded-full"
+          style={{
+            inset: "4%",
+            background:
+              "radial-gradient(circle at 30% 28%, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.03) 25%, rgba(0,0,0,0) 55%)"
+          }}
+        />
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -620,10 +822,10 @@ function VentureNode({
       </span>
 
       <span className={`flex flex-col gap-1.5 ${labelLayout}`}>
-        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.42em] text-ink-soft md:text-[12px]">
+        <span className="font-mono text-[11px] font-medium uppercase tracking-[0.44em] text-white/85 md:text-[12px]">
           {number}
         </span>
-        <span className="font-mono text-[12px] font-medium uppercase tracking-[0.34em] text-ink leading-tight transition-colors duration-500 group-hover:text-white md:text-[14px]">
+        <span className="font-mono text-[13px] font-semibold uppercase tracking-[0.34em] text-white leading-tight transition-colors duration-500 md:text-[15px]">
           {venture.name}
         </span>
       </span>
@@ -651,9 +853,9 @@ function AtmosphericLabels() {
           <motion.span
             key={l.text}
             initial={{ opacity: 0, letterSpacing: "0.6em" }}
-            animate={{ opacity: 0.62, letterSpacing: "0.42em" }}
+            animate={{ opacity: 0.78, letterSpacing: "0.42em" }}
             transition={{ duration: 2.0, delay: 0.6 + i * 0.2, ease: EASE }}
-            className="absolute left-1/2 top-1/2 font-mono text-[11px] uppercase tracking-[0.42em] text-ink-soft md:text-[12px]"
+            className="absolute left-1/2 top-1/2 font-mono text-[11px] font-medium uppercase tracking-[0.42em] text-white md:text-[12px]"
             style={{
               transform: `translate(-50%, -50%) translate(${dx}vmin, ${dy}vmin)`
             }}
@@ -676,8 +878,8 @@ function Headline({ active }: { active: boolean }) {
           : { opacity: 0, y: 16, filter: "blur(8px)" }
       }
       transition={{ duration: 1.8, delay: 0.4, ease: EASE }}
-      className="absolute bottom-12 left-6 z-10 max-w-[26rem] font-display text-[clamp(2.5rem,5vw,5.25rem)] font-light leading-[0.98] text-white md:bottom-16 md:left-12 md:max-w-[32rem]"
-      style={{ textShadow: "0 1px 18px rgba(0,0,0,0.55)" }}
+      className="absolute bottom-12 left-6 z-10 max-w-[26rem] font-display text-[clamp(2.5rem,5vw,5.25rem)] font-normal leading-[0.98] text-white md:bottom-16 md:left-12 md:max-w-[32rem]"
+      style={{ textShadow: "0 2px 24px rgba(0,0,0,0.7)" }}
     >
       The infrastructure for modern influence.
     </motion.h1>
