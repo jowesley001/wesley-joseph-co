@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { INTRO_STORAGE_KEY } from "@/lib/constants";
-import { EclipseIntroFallback } from "@/components/ui/EclipseIntroFallback";
 import { OrbitHomepage } from "./OrbitHomepage";
 
 // Cinematic intro → orbit homepage:
@@ -35,7 +34,7 @@ function markIntroSeen() {
 
 const EclipseScene = dynamic(
   () => import("@/components/ui/EclipseScene").then((m) => m.EclipseScene),
-  { ssr: false, loading: () => <EclipseIntroFallback /> }
+  { ssr: false, loading: () => null }
 );
 
 export function CinematicHomepage() {
@@ -89,13 +88,13 @@ export function CinematicHomepage() {
   const homepageActive = phase === "homepage";
 
   if (phase === "checking") {
-    return <EclipseIntroFallback />;
+    return <div className="h-[100svh] bg-bg" aria-hidden />;
   }
 
   return (
     <>
       {/* Eclipse intro layer — fixed full-screen overlay. Once we enter
-          the homepage phase the native canvas is fully unmounted so its
+          the homepage phase the Spline scene is fully unmounted so its
           render loop stops painting on top of the orbit composition. */}
       {phase === "intro" || phase === "transition" ? (
         <motion.div
