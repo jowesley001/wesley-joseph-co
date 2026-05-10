@@ -5,31 +5,28 @@ import dynamic from "next/dynamic";
 import { useEffect, useState, type CSSProperties } from "react";
 import { MovingParticles } from "@/components/ui/MovingParticles";
 
-// Cinematic sequence (single 9s timeline):
+// Cinematic sequence (single 11s timeline):
 //
-//   0.0 – 4.0s   The full eclipse plays alone. No text. The viewer
-//                watches the Spline scene — moon drifts in front of
-//                the sun, corona ring forms.
-//   4.0 – 7.0s   Two things happen in parallel:
-//                  • "WESLEY JOSEPH CO.COM" slowly appears
-//                    (mask reveals, blur sharpens, opacity 0 → 1,
-//                    letter-spacing tightens, scale grows).
+//   0.0 – 7.0s   The Spline eclipse plays alone, undisturbed. Full
+//                7 seconds so the moon completes its drift, the
+//                corona forms, and totality fully develops. Nothing
+//                else moves on the page during this phase.
+//   7.0 – 9.5s   Only after totality is fully formed:
+//                  • "WESLEY JOSEPH CO.COM" slowly appears.
 //                  • The eclipse simultaneously shrinks and travels
-//                    rightward, landing inside the O of CO at scale
-//                    0.075 and x = +320px.
-//   7.0 – 9.0s   Tagline rises in. Header lands. Eclipse holds its
-//                tiny position inside the O. Brand mark settles.
-//   9.0s+       introComplete = true; ambient breathing forever.
+//                    rightward, landing inside the O of CO.
+//   9.5 – 11s    Tagline rises. Header lands. Eclipse holds its
+//                tiny position inside the O. Ambient breathing.
 
 const HEADLINE = ["Wesley", "Joseph", "Co.com"];
 
-// Times normalized to 9.0s:
-//   0.0s  → 0       eclipse playing alone
-//   4.0s  → 0.444   transition begins
-//   5.5s  → 0.611   midpoint — eclipse half-shrunk, text half-visible
-//   7.0s  → 0.778   transition complete
-//   9.0s  → 1       homepage active
-const TIMES = [0, 0.444, 0.611, 0.778, 1] as const;
+// Times normalized to 11s:
+//   0.0s   → 0        eclipse playing alone — full formation
+//   7.0s   → 0.636    totality reached; transition begins
+//   8.25s  → 0.75     midpoint — eclipse half-shrunk, text half-visible
+//   9.5s   → 0.864    transition complete, eclipse seated in the O
+//   11.0s  → 1        homepage active
+const TIMES = [0, 0.636, 0.75, 0.864, 1] as const;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const EclipseScene = dynamic(
@@ -41,7 +38,7 @@ export function CinematicHomepage() {
   const [introComplete, setIntroComplete] = useState(false);
 
   useEffect(() => {
-    const t = window.setTimeout(() => setIntroComplete(true), 9000);
+    const t = window.setTimeout(() => setIntroComplete(true), 11000);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -58,7 +55,7 @@ export function CinematicHomepage() {
           y: [0, 0, -4, -8, -8]
         }}
         transition={{
-          duration: 9.0,
+          duration: 9.5,
           times: [...TIMES],
           ease: EASE
         }}
@@ -85,7 +82,7 @@ export function CinematicHomepage() {
       <motion.p
         initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
         animate={{ opacity: 0.9, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 1.2, delay: 7.2, ease: EASE }}
+        transition={{ duration: 1.2, delay: 9.7, ease: EASE }}
         className="pointer-events-none absolute bottom-12 left-0 right-0 z-30 px-6 text-center md:bottom-16"
       >
         <motion.span
@@ -132,7 +129,7 @@ function BrandTypography({ introComplete }: { introComplete: boolean }) {
             ]
           } as never
         }
-        transition={{ duration: 9.0, times: [...TIMES], ease: EASE }}
+        transition={{ duration: 11.0, times: [...TIMES], ease: EASE }}
         style={
           {
             maskImage:
