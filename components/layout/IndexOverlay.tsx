@@ -14,7 +14,8 @@ const ROUTES = [
   { label: "Lumina Media", href: "/lumina", number: "02" },
   { label: "The Network", href: "/network", number: "03" },
   { label: "Wesley Insider", href: "/insider", number: "04" },
-  { label: "Sign In", href: "/login", number: "05" }
+  { label: "Creative Community", href: "/creative-community", number: "05" },
+  { label: "Sign In", href: "/login", number: "06" }
 ];
 
 export function IndexOverlay({ open, onClose }: Props) {

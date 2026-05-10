@@ -821,11 +821,12 @@ function VentureNodes({
 }: {
   onNavigate: (target: ExitTarget) => void;
 }) {
-  // Three ventures ride the orbital rings and drift gently along the
+  // Four ventures ride the orbital rings and drift gently along the
   // tangent of their orbit so they feel alive without leaving position.
   //   01 LUMINA MEDIA            → 258° (top, slightly left of vertical)
   //   02 WESLEY INSIDER NETWORK  → 340° (upper-right, above eclipse)
   //   03 WESLEY INSIDER          → 100° (bottom, slightly right of vertical)
+  //   04 CREATIVE COMMUNITY      → 30° (lower-right, creator orbit)
   const nodes = [
     {
       v: ventures[0],
@@ -850,6 +851,14 @@ function VentureNodes({
       labelPlacement: "below" as const,
       driftPx: 12,
       driftDuration: 36
+    },
+    {
+      v: ventures[3],
+      angle: 30,
+      ring: 74,
+      labelPlacement: "right" as const,
+      driftPx: 9,
+      driftDuration: 34
     }
   ];
 
@@ -1032,6 +1041,22 @@ function VentureNode({
           transition={{ duration: 0.55, ease: EASE }}
         >
           {venture.name}
+        </motion.span>
+        <motion.span
+          className="block max-w-[18rem] overflow-hidden"
+          initial={false}
+          animate={{
+            height: hover ? "auto" : 0,
+            opacity: hover ? 1 : 0
+          }}
+          transition={{ duration: 0.5, ease: EASE }}
+        >
+          <span className="mt-1 block font-mono text-[8px] font-semibold uppercase tracking-[0.3em] text-white/58">
+            {venture.category}
+          </span>
+          <span className="mt-2 block text-[11px] leading-relaxed text-white/62">
+            {venture.description}
+          </span>
         </motion.span>
       </span>
     </Link>

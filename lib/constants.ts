@@ -12,6 +12,7 @@ export type NavLink = { label: string; href: string; external?: boolean };
 
 export const NAV_LINKS: NavLink[] = [
   { label: "Ventures", href: "/ventures" },
+  { label: "Creative", href: "/creative-community" },
   { label: "Insider", href: "/insider" },
   { label: "Network", href: "/network" },
   { label: "Lumina", href: "/lumina" }
@@ -21,7 +22,8 @@ export const FOOTER_LINKS = {
   ventures: [
     { label: "Lumina Media", href: "/lumina" },
     { label: "Wesley Insider Network", href: "/network" },
-    { label: "Wesley Insider", href: "/insider" }
+    { label: "Wesley Insider", href: "/insider" },
+    { label: "Creative Community", href: "/creative-community" }
   ],
   company: [
     { label: "All Ventures", href: "/ventures" },

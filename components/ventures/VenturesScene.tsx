@@ -12,7 +12,7 @@ import { useEffect, useMemo, useState } from "react";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 type Venture = {
-  id: "lumina" | "network" | "insider";
+  id: "lumina" | "network" | "insider" | "creative";
   number: string;
   category: string;
   name: string;
@@ -53,6 +53,16 @@ const VENTURES: Venture[] = [
     cta: "Enter Wesley Insider",
     href: "https://wesleyinsider.com",
     external: true
+  },
+  {
+    id: "creative",
+    number: "04",
+    category: "Creators",
+    name: "Creative Community",
+    description:
+      "A community for creators building brands, content, and creative businesses.",
+    cta: "Enter Creative Community",
+    href: "/creative-community"
   }
 ];
 
@@ -315,7 +325,7 @@ function Hero({
             transition={{ duration: 1.45, delay: 0.24, ease: EASE }}
             className="mt-7 max-w-[720px] font-display text-[clamp(3.15rem,4.45vw,5.55rem)] font-light leading-[0.92] text-white"
           >
-            Three companies.
+            Four ventures.
             <br />
             One thesis.
           </motion.h1>
@@ -326,9 +336,9 @@ function Hero({
             transition={{ duration: 1.15, delay: 0.62, ease: EASE }}
             className="mt-8 max-w-sm text-[13px] leading-relaxed text-white/82 md:text-sm"
           >
-            Production. Membership. Editorial.
+            Production. Membership. Editorial. Creators.
             <br />
-            Three pillars. One mission.
+            Four vehicles. One standard.
           </motion.p>
         </div>
 
@@ -550,6 +560,7 @@ function VentureVisual({
 }) {
   if (id === "network") return <NetworkVisual hovered={hovered} />;
   if (id === "insider") return <InsiderVisual hovered={hovered} />;
+  if (id === "creative") return <CreativeVisual hovered={hovered} />;
   return <LuminaVisual hovered={hovered} />;
 }
 
@@ -662,6 +673,33 @@ function InsiderVisual({ hovered }: { hovered: boolean }) {
       <div className="absolute inset-0 bg-black/34" />
       <ArticleStack hovered={hovered} />
       <VisualTreatment hovered={hovered} />
+    </div>
+  );
+}
+
+function CreativeVisual({ hovered }: { hovered: boolean }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-black">
+      <ImagePlate
+        src="/ventures/creative-community.png"
+        hovered={hovered}
+        position="center right"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.9)_0%,rgba(0,0,0,0.48)_36%,rgba(0,0,0,0.12)_72%,rgba(0,0,0,0.04)_100%)]" />
+      <VisualTreatment hovered={hovered} />
+      <motion.div
+        className="absolute right-[10%] top-[20%] h-28 w-28 rounded-full border border-white/24"
+        animate={{ rotate: 360, scale: hovered ? [1, 1.07, 1] : [1, 1.035, 1] }}
+        transition={{
+          rotate: { duration: 34, repeat: Infinity, ease: "linear" },
+          scale: { duration: 6.4, repeat: Infinity, ease: "easeInOut" }
+        }}
+      />
+      <motion.div
+        className="absolute bottom-[18%] left-[42%] h-px w-[45%] bg-gradient-to-r from-transparent via-white/34 to-transparent"
+        animate={{ opacity: hovered ? [0.26, 0.72, 0.26] : [0.16, 0.38, 0.16] }}
+        transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
+      />
     </div>
   );
 }
@@ -854,7 +892,7 @@ function MiniOrbit() {
         animate={{ scale: [1, 1.35, 1], opacity: [0.75, 1, 0.75] }}
         transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
       />
-      {[18, 36, 72].map((x, index) => (
+      {[18, 36, 64, 82].map((x, index) => (
         <motion.span
           key={x}
           className="absolute top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-white/90 shadow-[0_0_14px_rgba(255,255,255,0.8)]"

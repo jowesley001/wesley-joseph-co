@@ -48,6 +48,7 @@ export const metadata: Metadata = {
     "Wesley Insider",
     "Wesley Insider Network",
     "Lumina Media",
+    "Creative Community",
     "holding company",
     "media ecosystem"
   ],

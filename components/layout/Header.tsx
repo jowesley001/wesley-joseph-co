@@ -26,7 +26,10 @@ export function Header({ cinematic = false }: Props) {
   });
   const pathname = usePathname();
   const hideForFramedVenturePage =
-    pathname === "/lumina" || pathname === "/network" || pathname === "/insider";
+    pathname === "/lumina" ||
+    pathname === "/network" ||
+    pathname === "/insider" ||
+    pathname === "/creative-community";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);

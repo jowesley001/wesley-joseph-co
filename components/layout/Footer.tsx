@@ -8,7 +8,10 @@ import { SITE } from "@/lib/constants";
 export function Footer() {
   const pathname = usePathname();
   const hideForFramedVenturePage =
-    pathname === "/lumina" || pathname === "/network" || pathname === "/insider";
+    pathname === "/lumina" ||
+    pathname === "/network" ||
+    pathname === "/insider" ||
+    pathname === "/creative-community";
 
   if (hideForFramedVenturePage) {
     return null;

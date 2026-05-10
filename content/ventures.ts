@@ -36,5 +36,14 @@ export const ventures: Venture[] = [
       "Entrepreneurship. Personal branding. Money and wealth. Faith. Intelligence published daily.",
     href: "https://wesleyinsider.com",
     external: true
+  },
+  {
+    id: "creative-community",
+    name: "Creative Community",
+    category: "Creators",
+    tagline: "Creators. Collaboration. Opportunity.",
+    description:
+      "A community for creators building brands, content, and creative businesses.",
+    href: "/creative-community"
   }
 ];

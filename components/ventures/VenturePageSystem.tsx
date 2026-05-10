@@ -25,7 +25,11 @@ type IconName =
   | "intelligence"
   | "wealth"
   | "brand"
-  | "faith";
+  | "faith"
+  | "community"
+  | "education"
+  | "visibility"
+  | "lightning";
 
 type Capability = {
   title: string;
@@ -50,11 +54,15 @@ type HeroProps = {
   positioning: string;
   cta: VentureLink;
   visual: Visual;
+  kicker?: string;
 };
 
 type ManifestoProps = {
   statement: string;
   visual?: Visual;
+  body?: string;
+  label?: string;
+  centered?: boolean;
 };
 
 type CapabilitiesProps = {
@@ -67,6 +75,12 @@ type VisualPanelProps = {
   headline: string;
   body: string;
   cta?: VentureLink;
+};
+
+type CollagePanelProps = {
+  label: string;
+  headline: string;
+  visuals: Visual[];
 };
 
 type CTAProps = {
@@ -434,6 +448,35 @@ function IconGlyph({ name }: { name: IconName }) {
           <path className={common} d="M8 25c3-4 13-4 16 0" fill="none" strokeWidth="1.2" />
         </svg>
       );
+    case "community":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden className="h-7 w-7">
+          <circle className={common} cx="11" cy="12" r="3.5" fill="none" strokeWidth="1.2" />
+          <circle className={common} cx="21" cy="12" r="3.5" fill="none" strokeWidth="1.2" />
+          <circle className={common} cx="16" cy="21" r="3.5" fill="none" strokeWidth="1.2" />
+          <path className={common} d="M8 25c1.8-3 4.8-4.5 8-4.5s6.2 1.5 8 4.5M5 17c1.3-2.2 3.4-3.3 6-3.3M21 13.7c2.6 0 4.7 1.1 6 3.3" fill="none" strokeWidth="1.2" />
+        </svg>
+      );
+    case "education":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden className="h-7 w-7">
+          <path className={common} d="m5 12 11-6 11 6-11 6z" fill="none" strokeWidth="1.2" />
+          <path className={common} d="M10 15v6c3.6 2.4 8.4 2.4 12 0v-6M27 12v7" fill="none" strokeWidth="1.2" />
+        </svg>
+      );
+    case "visibility":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden className="h-7 w-7">
+          <path className={common} d="M5 16c3.2-5.2 6.9-7.8 11-7.8S23.8 10.8 27 16c-3.2 5.2-6.9 7.8-11 7.8S8.2 21.2 5 16z" fill="none" strokeWidth="1.2" />
+          <circle className={common} cx="16" cy="16" r="4" fill="none" strokeWidth="1.2" />
+        </svg>
+      );
+    case "lightning":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden className="h-7 w-7">
+          <path className={common} d="m18 4-9 14h7l-2 10 9-14h-7z" fill="none" strokeWidth="1.2" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -459,7 +502,7 @@ export function VenturePageShell({ children, title }: ShellProps) {
   );
 }
 
-export function VentureHero({ index, name, positioning, cta, visual }: HeroProps) {
+export function VentureHero({ index, name, positioning, cta, visual, kicker }: HeroProps) {
   return (
     <section className="relative min-h-screen overflow-hidden border-b border-white/[0.14] pt-20">
       <motion.div
@@ -504,10 +547,20 @@ export function VentureHero({ index, name, positioning, cta, visual }: HeroProps
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.15, delay: 0.34, ease: EASE }}
-            className="mt-8 max-w-[33rem] text-base leading-relaxed text-white/82 md:text-lg"
+            className={`${kicker ? "mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.28em] text-white/86 md:text-[11px]" : "mt-8 max-w-[33rem] text-base leading-relaxed text-white/82 md:text-lg"}`}
           >
-            {positioning}
+            {kicker ?? positioning}
           </motion.p>
+          {kicker ? (
+            <motion.p
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.15, delay: 0.44, ease: EASE }}
+              className="mt-6 max-w-[38rem] text-base leading-relaxed text-white/82 md:text-lg"
+            >
+              {positioning}
+            </motion.p>
+          ) : null}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -521,7 +574,13 @@ export function VentureHero({ index, name, positioning, cta, visual }: HeroProps
   );
 }
 
-export function VentureManifesto({ statement, visual }: ManifestoProps) {
+export function VentureManifesto({
+  statement,
+  visual,
+  body,
+  label = "Our Manifesto",
+  centered = false
+}: ManifestoProps) {
   return (
     <section className="relative min-h-[34rem] overflow-hidden border-b border-white/[0.14]">
       {visual ? (
@@ -543,19 +602,26 @@ export function VentureManifesto({ statement, visual }: ManifestoProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-90px" }}
           transition={{ duration: 0.9, ease: EASE }}
-          className="font-mono text-[9px] font-semibold uppercase tracking-[0.34em] text-white/48"
+          className={`font-mono text-[9px] font-semibold uppercase tracking-[0.34em] text-white/48 ${centered ? "md:col-span-2 md:text-center" : ""}`}
         >
-          Our Manifesto
+          {label}
         </motion.p>
-        <motion.h2
+        <motion.div
           initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
           whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           viewport={{ once: true, margin: "-90px" }}
           transition={{ duration: 1.15, ease: EASE }}
-          className="max-w-6xl font-display text-[clamp(2.8rem,5vw,6.6rem)] font-light leading-[0.98] tracking-normal text-white"
+          className={centered ? "md:col-span-2 md:mx-auto md:max-w-5xl md:text-center" : ""}
         >
-          {statement}
-        </motion.h2>
+          <h2 className="max-w-6xl font-display text-[clamp(2.8rem,5vw,6.6rem)] font-light leading-[0.98] tracking-normal text-white">
+            {statement}
+          </h2>
+          {body ? (
+            <p className={`mt-8 max-w-3xl text-base leading-relaxed text-white/76 md:text-lg ${centered ? "mx-auto" : ""}`}>
+              {body}
+            </p>
+          ) : null}
+        </motion.div>
       </div>
     </section>
   );
@@ -646,6 +712,59 @@ export function VentureVisualPanel({ visual, headline, body, cta }: VisualPanelP
             {body}
           </p>
           {cta ? <TextCTA cta={cta} className="mt-9" /> : null}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+export function VentureCollagePanel({ label, headline, visuals }: CollagePanelProps) {
+  return (
+    <section className="relative overflow-hidden border-b border-white/[0.14] bg-black">
+      <div className="grid min-h-[34rem] grid-cols-1 md:grid-cols-4">
+        {visuals.map((visual, index) => (
+          <motion.div
+            key={`${visual.src}-${index}`}
+            className="relative min-h-[16rem] overflow-hidden border-b border-white/[0.12] md:min-h-[34rem] md:border-b-0 md:border-r md:border-white/[0.12] md:last:border-r-0"
+            initial={{ opacity: 0, y: 28, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 1, delay: index * 0.08, ease: EASE }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-cover bg-center grayscale"
+              style={{
+                backgroundImage: `url(${visual.src})`,
+                backgroundPosition: visual.position ?? "center"
+              }}
+              animate={{
+                scale: [1.08, 1.16, 1.08],
+                x: index % 2 === 0 ? [-10, 8, -10] : [8, -10, 8],
+                filter: ["grayscale(1) contrast(1.05) brightness(0.62)", "grayscale(1) contrast(1.24) brightness(0.82)", "grayscale(1) contrast(1.05) brightness(0.62)"]
+              }}
+              transition={{ duration: 18 + index * 2, repeat: Infinity, ease: "easeInOut" }}
+              role="img"
+              aria-label={visual.alt}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.12),rgba(0,0,0,0.64)),linear-gradient(90deg,rgba(0,0,0,0.28),rgba(0,0,0,0.1))]" />
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-5 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
+          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 1.15, ease: EASE }}
+          className="max-w-5xl"
+        >
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.34em] text-white/72">
+            {label}
+          </p>
+          <h2 className="mt-5 font-display text-[clamp(2.7rem,5vw,6.6rem)] font-light leading-[0.98] text-white drop-shadow-[0_12px_38px_rgba(0,0,0,0.82)]">
+            {headline}
+          </h2>
         </motion.div>
       </div>
     </section>
