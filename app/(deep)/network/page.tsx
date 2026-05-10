@@ -1,67 +1,87 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { PageHeader } from "@/components/ui/PageHeader";
+import {
+  VentureCTA,
+  VentureCapabilities,
+  VentureHero,
+  VentureManifesto,
+  VenturePageShell,
+  VentureVisualPanel
+} from "@/components/ventures/VenturePageSystem";
 
 export const metadata: Metadata = {
   title: "Wesley Insider Network",
   description:
-    "A private multi-state business membership for owners, operators, and capital allocators."
+    "A private multi-state business membership for operators, owners, and capital allocators."
 };
 
-const pillars = [
+const cta = {
+  label: "Apply to the network",
+  href: "mailto:network@wesleyjoseph.co"
+};
+
+const capabilities = [
   {
-    title: "Curated Rooms",
-    body: "Members are vetted for outcomes, not optics. Every room is built around a thesis."
+    title: "Private events",
+    icon: "event" as const,
+    body: "Exclusive events in key cities with high-level founders and investors."
   },
   {
-    title: "Shared Deal Flow",
-    body: "Operating opportunities, real estate, and capital introductions move inside the network first."
+    title: "Founder connections",
+    icon: "connection" as const,
+    body: "Meaningful introductions to operators, investors, and industry leaders."
   },
   {
-    title: "Real Introductions",
-    body: "Warm, accountable, two-sided. The opposite of networking."
+    title: "Business opportunities",
+    icon: "opportunity" as const,
+    body: "Curated opportunities across industries and markets."
+  },
+  {
+    title: "Strategic introductions",
+    icon: "intro" as const,
+    body: "We connect you to the right people at the right time."
+  },
+  {
+    title: "Member resources",
+    icon: "resource" as const,
+    body: "Tools, templates, and resources to help you scale and lead."
   }
 ];
 
 export default function NetworkPage() {
   return (
-    <>
-      <PageHeader
-        number="02"
-        eyebrow="The Network / Membership"
-        title="Connections that create real opportunities."
-        body="The Wesley Insider Network is a private multi-state business membership for owners, operators, and capital allocators."
-        back={{ label: "Back to home", href: "/" }}
+    <VenturePageShell title="Wesley Insider Network">
+      <VentureHero
+        index="02"
+        name="Wesley Insider Network"
+        positioning="A private multi-state business membership for operators, owners, and capital allocators."
+        cta={cta}
+        visual={{
+          src: "/ventures/wesley-insider-network.png",
+          alt: "Black and white map of city lights and network connection lines."
+        }}
       />
-
-      <section className="relative bg-bg">
-        <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
-          <div className="grid grid-cols-1 gap-16 md:grid-cols-3 md:gap-x-12 md:gap-y-20">
-            {pillars.map((p, i) => (
-              <div key={p.title}>
-                <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-muted">
-                  <span className="text-ink">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="ml-6">Pillar</span>
-                </p>
-                <h3 className="mt-6 font-display text-3xl text-ink">{p.title}</h3>
-                <p className="mt-4 font-sans text-base text-ink-soft leading-relaxed">{p.body}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-32">
-            <Link
-              href="mailto:network@wesleyjoseph.co"
-              className="group inline-flex items-center gap-4 font-mono text-[12px] uppercase tracking-[0.32em] text-ink"
-            >
-              <span>Apply for Membership</span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/40 transition-colors duration-500 group-hover:border-ink group-hover:bg-ink group-hover:text-bg">
-                <span aria-hidden>{"→"}</span>
-              </span>
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+      <VentureManifesto
+        statement="Access changes everything. We connect exceptional people to exceptional opportunities."
+        visual={{
+          src: "/ventures/wesley-insider-network.png",
+          alt: "Private business network atmosphere with city lights and connection arcs."
+        }}
+      />
+      <VentureCapabilities label="What we provide" items={capabilities} />
+      <VentureVisualPanel
+        visual={{
+          src: "/ventures/wesley-insider-network.png",
+          alt: "Cinematic black and white network system over city lights."
+        }}
+        headline="A global network built on trust."
+        body="Different backgrounds. Same standard."
+        cta={{ label: "Learn more", href: "/ventures" }}
+      />
+      <VentureCTA
+        kicker="Ready to join the inner circle?"
+        line="Apply to the network."
+        cta={cta}
+      />
+    </VenturePageShell>
   );
 }

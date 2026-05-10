@@ -1,60 +1,88 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { PageHeader } from "@/components/ui/PageHeader";
+import {
+  VentureCTA,
+  VentureCapabilities,
+  VentureHero,
+  VentureManifesto,
+  VenturePageShell,
+  VentureVisualPanel
+} from "@/components/ventures/VenturePageSystem";
 
 export const metadata: Metadata = {
   title: "Wesley Insider",
   description:
-    "Wesley Insider is a digital editorial publication on entrepreneurship, personal branding, money and wealth, and faith. Sixty plus articles every day."
+    "Independent editorial for entrepreneurs, decision makers, money, wealth, personal branding, and faith."
 };
 
-const beats = [
-  "Entrepreneurship",
-  "Personal Branding",
-  "Money and Wealth",
-  "Faith"
+const cta = {
+  label: "Read Wesley Insider",
+  href: "https://wesleyinsider.com",
+  external: true
+};
+
+const capabilities = [
+  {
+    title: "Daily editorial",
+    icon: "editorial" as const,
+    body: "Timely coverage on business, markets, and modern culture."
+  },
+  {
+    title: "Founder intelligence",
+    icon: "intelligence" as const,
+    body: "Insights and lessons from top founders and operators."
+  },
+  {
+    title: "Wealth and money insights",
+    icon: "wealth" as const,
+    body: "Breakdowns of wealth building, investments, and financial strategy."
+  },
+  {
+    title: "Personal branding",
+    icon: "brand" as const,
+    body: "Strategies to build influence, authority, and impact."
+  },
+  {
+    title: "Faith and leadership",
+    icon: "faith" as const,
+    body: "Faith-driven perspective on leadership, purpose, and calling."
+  }
 ];
 
 export default function InsiderPage() {
   return (
-    <>
-      <PageHeader
-        number="03"
-        eyebrow="Wesley Insider / Editorial"
-        title="Intelligence, published daily."
-        body="Sixty plus articles every day on entrepreneurship, personal branding, money and wealth, and faith. The signal operators read before the cycle catches it."
-        back={{ label: "Back to home", href: "/" }}
+    <VenturePageShell title="Wesley Insider">
+      <VentureHero
+        index="03"
+        name="Wesley Insider"
+        positioning="Independent editorial for entrepreneurs, decision makers, money, wealth, personal branding, and faith."
+        cta={cta}
+        visual={{
+          src: "/ventures/wesley-insider-editorial.png",
+          alt: "Black and white editorial desk with city lights, laptop, notebook, and atmospheric media scene."
+        }}
       />
-
-      <section className="relative bg-bg">
-        <div className="mx-auto max-w-[1440px] px-6 py-24 md:px-12 md:py-32">
-          <div className="grid grid-cols-2 gap-x-10 gap-y-14 md:grid-cols-4 md:gap-y-16">
-            {beats.map((beat, i) => (
-              <div key={beat}>
-                <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-ink-muted">
-                  <span className="text-ink">{String(i + 1).padStart(2, "0")}</span>
-                  <span className="ml-6">Beat</span>
-                </p>
-                <h3 className="mt-6 font-display text-2xl text-ink md:text-3xl">{beat}</h3>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-32">
-            <Link
-              href="https://wesleyinsider.com"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="group inline-flex items-center gap-4 font-mono text-[12px] uppercase tracking-[0.32em] text-ink"
-            >
-              <span>Visit wesleyinsider.com</span>
-              <span className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/40 transition-colors duration-500 group-hover:border-ink group-hover:bg-ink group-hover:text-bg">
-                <span aria-hidden>{"→"}</span>
-              </span>
-            </Link>
-          </div>
-        </div>
-      </section>
-    </>
+      <VentureManifesto
+        statement="We publish what matters. Clear thinking for a world that moves fast."
+        visual={{
+          src: "/ventures/wesley-insider-editorial.png",
+          alt: "Black and white editorial layouts and media intelligence atmosphere."
+        }}
+      />
+      <VentureCapabilities label="What we cover" items={capabilities} />
+      <VentureVisualPanel
+        visual={{
+          src: "/ventures/wesley-insider-editorial.png",
+          alt: "Cinematic black and white editorial workspace with laptop and city light."
+        }}
+        headline="Intelligence that builds influence."
+        body="Real stories. Real people. Real impact."
+        cta={{ label: "Explore articles", href: "https://wesleyinsider.com", external: true }}
+      />
+      <VentureCTA
+        kicker="Stay informed. Stay ahead."
+        line="Read Wesley Insider."
+        cta={{ label: "Visit wesleyinsider.com", href: "https://wesleyinsider.com", external: true }}
+      />
+    </VenturePageShell>
   );
 }

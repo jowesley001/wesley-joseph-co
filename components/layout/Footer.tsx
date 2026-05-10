@@ -1,10 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { SITE } from "@/lib/constants";
 
 export function Footer() {
+  const pathname = usePathname();
+  const hideForFramedVenturePage =
+    pathname === "/lumina" || pathname === "/network" || pathname === "/insider";
+
+  if (hideForFramedVenturePage) {
+    return null;
+  }
+
   return (
     <footer className="relative z-20 bg-black">
       <div className="mx-auto grid max-w-[1536px] grid-cols-1 items-center gap-5 border-t border-white/[0.12] px-6 py-6 md:grid-cols-3 md:px-8">

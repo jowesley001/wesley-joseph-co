@@ -25,6 +25,8 @@ export function Header({ cinematic = false }: Props) {
     }
   });
   const pathname = usePathname();
+  const hideForFramedVenturePage =
+    pathname === "/lumina" || pathname === "/network" || pathname === "/insider";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);
@@ -53,6 +55,10 @@ export function Header({ cinematic = false }: Props) {
   // like editorial chrome immediately.
   const isHome = pathname === "/";
   const reveal = cinematic && isHome && !introSeenOnMount ? 7.4 : 0.4;
+
+  if (hideForFramedVenturePage) {
+    return null;
+  }
 
   return (
     <motion.header
