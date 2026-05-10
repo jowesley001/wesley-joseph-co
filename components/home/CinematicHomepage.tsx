@@ -44,14 +44,14 @@ export function CinematicHomepage() {
 
   return (
     <section className="relative h-[100svh] w-full overflow-hidden bg-bg text-ink">
-      {/* Spline eclipse — full-screen, then visibly shrinks and travels
-          into the second O. Both transformations animate over 3s so the
-          journey is felt, not cut. */}
+      {/* Spline eclipse — renders at its native composition for the full
+          7-second formation. Only after the scene finishes does the
+          canvas shrink and travel rightward into the O of CO. */}
       <motion.div
         initial={{ scale: 1, x: 0, y: 0 }}
         animate={{
           scale: [1, 1, 0.4, 0.075, 0.075],
-          x: [0, 0, 180, 320, 320],
+          x: [0, 0, 160, 320, 320],
           y: [0, 0, -4, -8, -8]
         }}
         transition={{
