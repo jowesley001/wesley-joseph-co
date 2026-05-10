@@ -30,7 +30,7 @@ export const FOOTER_LINKS = {
   ]
 } as const;
 
-export const INTRO_STORAGE_KEY = "wjc:intro:v1:seen";
+export const INTRO_STORAGE_KEY = "wj:intro-seen";
 // Cinematic eclipse welcome sequence runs for ~3.8s before transitioning
 // into the orbital homepage. Total user-visible duration with the 1.0s
 // cross-fade lands at ~4.6s, within the 3-5s spec.

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { NAV_LINKS, SITE } from "@/lib/constants";
+import { INTRO_STORAGE_KEY, NAV_LINKS, SITE } from "@/lib/constants";
 
 type Props = {
   cinematic?: boolean;
@@ -13,6 +13,17 @@ type Props = {
 export function Header({ cinematic = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [time, setTime] = useState<string>("");
+  const [introSeenOnMount] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    try {
+      return window.sessionStorage.getItem(INTRO_STORAGE_KEY) === "true";
+    } catch {
+      return false;
+    }
+  });
   const pathname = usePathname();
 
   useEffect(() => {
@@ -41,7 +52,7 @@ export function Header({ cinematic = false }: Props) {
   // Header lands late only on the homepage intro. Deep pages should read
   // like editorial chrome immediately.
   const isHome = pathname === "/";
-  const reveal = cinematic && isHome ? 7.4 : 0.4;
+  const reveal = cinematic && isHome && !introSeenOnMount ? 7.4 : 0.4;
 
   return (
     <motion.header

@@ -16,7 +16,7 @@ Open [http://localhost:3000](http://localhost:3000).
 To replay the intro animation, run in the browser console:
 
 ```js
-localStorage.removeItem("wjc:intro:v1:seen");
+sessionStorage.removeItem("wj:intro-seen");
 ```
 
 ## Production build
