@@ -68,14 +68,6 @@ type Star = {
   delay: number;
 };
 
-type Light = {
-  id: number;
-  x: number;
-  y: number;
-  size: number;
-  opacity: number;
-};
-
 export function VenturesScene() {
   const px = useMotionValue(0);
   const py = useMotionValue(0);
@@ -609,7 +601,6 @@ function LuminaVisual({ hovered }: { hovered: boolean }) {
 }
 
 function NetworkVisual({ hovered }: { hovered: boolean }) {
-  const lights = useMemo(() => makeMapLights(210), []);
   const arcs = [
     { start: [12, 74], end: [48, 52], peak: [30, 35] },
     { start: [20, 68], end: [73, 48], peak: [44, 27] },
@@ -621,46 +612,13 @@ function NetworkVisual({ hovered }: { hovered: boolean }) {
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
-      <motion.div
-        className="absolute inset-x-[3%] bottom-[-20%] h-[132%] rounded-[50%] border-t border-white/20 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.075)_22%,rgba(0,0,0,0.22)_54%,rgba(0,0,0,0.98)_78%)]"
-        animate={{ opacity: hovered ? [0.7, 0.98, 0.7] : [0.5, 0.78, 0.5] }}
-        transition={{ duration: 6.8, repeat: Infinity, ease: "easeInOut" }}
+      <ImagePlate
+        src="/ventures/wesley-insider-network.png"
+        hovered={hovered}
+        position="center right"
       />
-
-      <motion.div
-        className="absolute inset-0"
-        animate={{
-          scale: hovered ? 1.055 : 1.025,
-          x: hovered ? -7 : 0,
-          y: hovered ? -3 : 0
-        }}
-        transition={{ duration: 1.1, ease: EASE }}
-      >
-        {lights.map((light) => (
-          <motion.span
-            key={light.id}
-            className="absolute rounded-full bg-white"
-            style={{
-              left: `${light.x}%`,
-              top: `${light.y}%`,
-              width: light.size,
-              height: light.size,
-              opacity: light.opacity,
-              boxShadow:
-                light.size > 1.8
-                  ? "0 0 8px rgba(255,255,255,0.9)"
-                  : "0 0 4px rgba(255,255,255,0.48)"
-            }}
-            animate={{ opacity: [light.opacity * 0.45, light.opacity, light.opacity * 0.45] }}
-            transition={{
-              duration: 3.2 + (light.id % 9) * 0.35,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: (light.id % 11) * 0.18
-            }}
-          />
-        ))}
-      </motion.div>
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.58)_34%,rgba(0,0,0,0.12)_68%,rgba(0,0,0,0.04)_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_58%,rgba(255,255,255,0.16),rgba(255,255,255,0.035)_34%,rgba(0,0,0,0)_72%)]" />
 
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
         {arcs.map((arc, index) => (
@@ -679,7 +637,16 @@ function NetworkVisual({ hovered }: { hovered: boolean }) {
         ))}
       </svg>
 
-      <VisualTreatment hovered={hovered} />
+      <motion.div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 72% 48%, rgba(255,255,255,0.14), rgba(255,255,255,0.03) 36%, rgba(0,0,0,0) 70%)",
+          mixBlendMode: "screen"
+        }}
+        animate={{ opacity: hovered ? [0.3, 0.55, 0.3] : [0.16, 0.32, 0.16] }}
+        transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+      />
     </div>
   );
 }
@@ -815,39 +782,6 @@ function PanelOrbit({ hovered }: { hovered: boolean }) {
       </motion.span>
     </div>
   );
-}
-
-function makeMapLights(count: number): Light[] {
-  const clusters = [
-    { x: 28, y: 68, sx: 13, sy: 8, weight: 0.24 },
-    { x: 43, y: 60, sx: 16, sy: 9, weight: 0.28 },
-    { x: 61, y: 56, sx: 18, sy: 8, weight: 0.24 },
-    { x: 72, y: 66, sx: 14, sy: 9, weight: 0.16 },
-    { x: 54, y: 76, sx: 20, sy: 5, weight: 0.08 }
-  ];
-
-  return Array.from({ length: count }, (_, index) => {
-    const pick = seeded(index + 19, 1.7);
-    let cursor = 0;
-    const cluster =
-      clusters.find((item) => {
-        cursor += item.weight;
-        return pick <= cursor;
-      }) ?? clusters[0];
-
-    const x =
-      cluster.x + (seeded(index + 29, 3.9) * 2 - 1) * cluster.sx;
-    const y =
-      cluster.y + (seeded(index + 31, 6.2) * 2 - 1) * cluster.sy;
-
-    return {
-      id: index,
-      x: Math.max(5, Math.min(98, x)),
-      y: Math.max(36, Math.min(86, y)),
-      size: 0.7 + seeded(index + 37, 9.1) * 2.2,
-      opacity: 0.28 + seeded(index + 41, 11.4) * 0.72
-    };
-  });
 }
 
 function EcosystemClose() {
